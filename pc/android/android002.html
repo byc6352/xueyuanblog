@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>解决android 连接真机调试连接不了的问题</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><p>无论是eclipse还是Android Studio ，有时候会出现无法连通手机的问题，显示：</p>
+<p><font color="red">no target device fund.</font></p>
+<p>可以根据以下几个步骤来解决此问题：</p>
+<h1>一.手机连接电脑，是否安装了手机驱动？</h1>
+  <p>比如：华为INE-ALOO连接手机时，会自动弹出要求安装华为手机助手的提示，一定要按照要求安装，因为里面包含了手机驱动！</p>
+<p>如果手机助手连通手机了，说明驱动安装成功了！</p>
+<h1>二.是否打开了手机的调试模式？</h1>
+ <p> 打开手机调试模式的方法：</p>
+  <h5>1.找到手机版本号，连接点击5下，就可打开“开发者模式”；</h5>
+  <h5>2.进入“开发人员选项”，找到“USB调试”打开；</h5>
+  <h5>3.夜神模拟器适用以上方法；</h5>
+<h1>三.是否正确启动adb服务？</h1>
+  <h5>1.配置adb环境变量；</h5>
+  <p>打开我的电脑属性--&gt;高级系统设置--&gt; 环境变量--&gt; 系统变量</p>
+  新增变量：android,值：android-sdk所在路径；（比如：C:\Users\HUASINE\AppData\Local\Android\Sdk\platform-tools）
+  <p>修改Path值，增加：;%android%</p>
+  <h5>2.确保adb服务端口不被占用；</h5>
+  <p>打开cmd，输入:</p>
+<pre><code>  adb start-server			//启动adb服务;
+  adb kill-server    	 //停止adb服务；
+  netstat -ano | findstr "5037"  	//查看占用5037端口的进程pid
+</code></pre>
+ <p> 如果占用5037端口的进程pid不是adb进程，则到任务管理器里面结束该进程，然后重新启动adb服务。</p>
+  <h5>3.如果是夜神模拟器</h5>
+  <p>需要转到夜神模拟器安装目录，执行：</p>
+<pre><code>nox_adb.exe connect 127.0.0.1:62001
+</code></pre>
+<h1>四.配置Edit Configurations..</h1>
+ <p> 依次打开</p>
+ <p> Run-&gt;Edit Configurations.. --&gt;Deployment Target Options--Target:</p>
+ <p>选择：<b>Open Select Deployment Target Dialog</b></p>
+  <p>然后运行APP.恭喜你，现在，你的虚拟机，或者是真机，都出来了！！！</p>
+</div>
+</body>
+
+</html>

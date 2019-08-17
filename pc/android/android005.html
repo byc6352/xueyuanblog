@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Android中数据存储——SQLite数据库存储数据</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><div id="article_content" class="article_content clearfix">
+<div class="article-copyright">
+   转载自：   https://blog.csdn.net/To_be_Designer/article/details/48274691   </div>
+
+<div id="content_views" class="markdown_views">
+ <p>　　当一个应用程序在Android中安装后，我们在使用应用的过程中会产生很多的数据，应用都有自己的数据，那么我们应该如何存储数据呢？</p>
+<h2 id="数据存储方式"><a></a><font color="#ff0000"><strong>数据存储方式</strong></font></h2>
+</div></div><p>Android 的数据存储有5种方式：</p>
+<p><strong>1. SharedPreferences存储数据</strong> <br>
+　　　SharedPreferences数据存储，也叫作xml存储。这是将数据存储“data/data/程序包名/share_prefs”路径下的到xml文件中。 <br>
+相关连接：<a href="http://blog.csdn.net/to_be_designer/article/details/48272759" rel="nofollow">《Android中数据存储——SharedPreferences存储数据》</a>　 <br>
+<strong>2. 文件存储数据</strong> <br>
+　　　分为内部储存和外部存储。内部存储是应用程序使用Android为自己分配的内存空间，数据存储到“/data/data/程序包名/files”路径下的相应文件中。外部存储是使用手机sdcard的内存（这个sdcard并不是我们经常说的那个可以拆卸替换的SD卡，那个SD卡我们称之为扩展卡），使用这部分内存要声明相应的权限。 <br>
+相关连接： <a href="http://blog.csdn.net/To_be_Designer/article/details/48274025" rel="nofollow">《Android中数据存储——文件存储数据 》</a> <br>
+<strong>3. SQLite数据库存储数据</strong> <br>
+　　使用数据库进行存储，这个一般数据量比较大的时候。　　 <br>
+相关连接：<a href="http://blog.csdn.net/To_be_Designer/article/details/48274691" rel="nofollow">《Android中数据存储——SQLite数据库存储数据》</a> <br>
+<strong>4. 使用ContentProvider存储数据</strong> <br>
+　　这个比较眼熟，ContentProvider也是Android的四大组件之一。ContentProvider一般是第三方提供的数据存储方式，向我们手机中的通讯录联系人，照片，音乐等…… <br>
+相关连接：<a href="http://blog.csdn.net/to_be_designer/article/details/48296679" rel="nofollow">《Android中数据存储——ContentProvider存储数据 》</a>　　 <br>
+<strong>5. 网络存储数据</strong> <br>
+　　　这个是将数据上传到网络上进行存储。</p>
+<p>　　下面进入我们今天的主要内容，使用SQLite数据库存储数据。</p>
+<h2 id="sqlite数据库存储数据"><a></a><font color="#ff0000"><strong>SQLite数据库存储数据</strong></font></h2>
+<p>　　<strong>SQLite是一个轻量级关系型数据库</strong>，既然是关系型数据库，那操作起来其实跟mysql、sql server差不多的。 <br>
+　　<strong>SQLite 和其他数据库最大的不同就是对数据类型的支持</strong>，创建一个表时，可以在 CREATE TABLE 语句中指定某列的数据类型，但是你可以把任何数据类型放入任何列中。当某个值插入数据库时，SQLite 将检查它的类型。如果该类型与关联的列不匹配，则 SQLite 会尝试将该值转换成该列的类型。如果不能转换，则该值将作为其本身具有的类型存储。比如可以把一个字符串（String）放入 INTEGER 列。SQLite 称这为“弱类型”（manifest typing.）。 <br>
+　　对数据库SQLite进行操作，我们要借助于SQLiteOpenHelper类进行操作。对数据库的操作也就是”增、删、改、查“。在学习数据库的操作之前我们首先要学会如何创建数据库……</p>
+<h3 id="创建数据库"><a></a><strong>创建数据库</strong></h3>
+<p>　　数据库的操作借助于SQLiteOpenHelper，SQLiteOpenHelper是一个抽象类，我们我们在使用SQLiteOpenHelper时要先创建一个MySQLiteOpenHelper继承SQLiteOpenHelper类。 <br>
+　　SQLiteOpenHelper有两个非常重要的方法：getReadableDatabase()方法返回数据库是一个只读的；getWriteableDatabase()方法获得是一个可读写的数据库对象。这里我们使用getWriteableDatabase()方法获得数据库Database对象。 <br>
+　　 <br>
+<strong>创建一个MySQLiteOpenHelper继承SQLiteOpenHelper类：</strong></p>
+<pre class="prettyprint"><code class="language-java hljs  has-numbering"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MySQLiteOpenHelper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">SQLiteOpenHelper</span> {</span>
+
+     <span class="hljs-comment">//构造器,传入四个参数Context对象，数据库名字name，操作数据库的Cursor对象，版本号version。 </span>
+    <span class="hljs-keyword">public</span> <span class="hljs-title">MySQLiteOpenHelper</span>(Context context, String name, SQLiteDatabase.CursorFactory factory, <span class="hljs-keyword">int</span> version) {
+        <span class="hljs-keyword">super</span>(context, name, factory, version);
+    }
+    <span class="hljs-comment">//自定义的构造器</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-title">MySQLiteOpenHelper</span>(Context context, String name) {
+        <span class="hljs-keyword">this</span>(context, name, <span class="hljs-keyword">null</span>, <span class="hljs-number">1</span>);<span class="hljs-comment">//传入Context和数据库的名称，调用上面那个构造器</span>
+    }
+
+    <span class="hljs-annotation">@Override</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onCreate</span>(SQLiteDatabase sqLiteDatabase) {
+        <span class="hljs-comment">//在创建数据库时，创建一个数据表table</span>
+        String sql = <span class="hljs-string">"create table if not exists user(id integer primary key  autoincrement, name varchar(20), passwords varchar(20))"</span>;
+        sqLiteDatabase.execSQL(sql);
+
+    }
+    <span class="hljs-annotation">@Override</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onUpgrade</span>(SQLiteDatabase sqLiteDatabase, <span class="hljs-keyword">int</span> i, <span class="hljs-keyword">int</span> i1) {
+    <span class="hljs-comment">//用于升级数据库，只需要在创建本类对象时传入一个比之前创建传入的version大的数即可。</span>
+    }
+}</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li><li>11</li><li>12</li><li>13</li><li>14</li><li>15</li><li>16</li><li>17</li><li>18</li><li>19</li><li>20</li><li>21</li><li>22</li><li>23</li></ul></pre>
+<p><strong>创建数据库：</strong></p>
+<pre class="prettyprint"><code class="language-java hljs  has-numbering">    <span class="hljs-comment">//创建数据库</span>
+        MySQLiteOpenHelper mySQLiteOpenHelper = <span class="hljs-keyword">new</span> MySQLiteOpenHelper(getApplicationContext(), <span class="hljs-string">"create_db"</span>);<span class="hljs-comment">//数据库名称为create_db。</span>
+        SQLiteDatabase db = mySQLiteOpenHelper.getWritableDatabase();</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li></ul></pre>
+<h3 id="增"><a></a><strong>增</strong></h3>
+<p>　　使用SQLiteDatabase的insert(String table, String nullColumnHack, ContentValues values)方法插入数据。这个方法包含三个参数： <br>
+　　我们先列举一条SQLite中的插入语句：<code>INSERT INTO user (name, passwords)] VALUES ("张三", "123456");</code> <br>
+<strong>String table：</strong>操作的数据表的名称。 <br>
+<strong>String nullColumnHack：</strong>用于我们在未指定添加数据的情况下，为数据表中可以添加null值的数据填入null值。一般这个参数我们传入null。 <br>
+<strong>ContentValues values：</strong>用于传递数据，通常我们通过ContentValues 类的对象的putXXX()方法封装数据，然后将数据添加进数据库。 <br>
+　　ContentValues 类，类似于java中的Map，以键值对的方式保存数据。</p>
+<pre class="prettyprint"><code class="language-java hljs  has-numbering">         ContentValues value = <span class="hljs-keyword">new</span> ContentValues();
+        value.put(<span class="hljs-string">"name"</span>, <span class="hljs-string">"张三"</span>);<span class="hljs-comment">//向数据表中字段名为name的字段中添加"张三"。</span>
+        value.put(<span class="hljs-string">"passwords"</span>, <span class="hljs-string">"123456"</span>);<span class="hljs-comment">//向数据表中字段名为passwords的字段中添加"123456"。</span>
+        <span class="hljs-comment">//db数据库对象在前面已经创建，这里直接使用。</span>
+        db.insert(<span class="hljs-string">"user"</span>,<span class="hljs-keyword">null</span>, value);<span class="hljs-comment">//在数据库的user数据表中插入：字段名name为"张三"，字段名passwords为"123456"的数据。</span></code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li></ul></pre>
+<h3 id="删"><a></a><strong>删</strong></h3>
+<p>　　使用SQLiteDatabase的delete(String table, String whereClause, String[] whereArgs)方法删除数据。这个方法包含三个参数： <br>
+　　我们先列举一条SQLite中的删除语句：<code>DELETE FROM user WHERE name="张三"</code>。 <br>
+<strong>String table：</strong>操作的数据表的名称。 <br>
+<strong>String whereClause：</strong>约束删除行的条件。相当于SQLite语句中“where name=？“内容。 <br>
+<strong>String[] whereArgs：</strong>与前一个参数对应约束删除行的条件。相当于”where name=”张三““中的”张三“。 <br>
+注意：如果参数String whereClause和参数String[] whereArgs都传null的话，就是删除所有行。</p>
+<pre class="prettyprint"><code class="language-java hljs  has-numbering">    <span class="hljs-comment">//db数据库对象在前面已经创建，这里直接使用。</span>
+    db.delete(<span class="hljs-string">"user"</span>, <span class="hljs-string">"name=?"</span>, <span class="hljs-keyword">new</span> String[]{<span class="hljs-string">"张三"</span>});</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li></ul></pre>
+<h3 id="改"><a></a><strong>改</strong></h3>
+<p>　　使用SQLiteDatabase的 update (String table, ContentValues values, String whereClause, String[] whereArgs)方法删除数据。这个方法包含四个参数： <br>
+　　我们先列举一条SQLite中的修改语句：<code>UPDATE user SET name= "李四", passwords= "123" WHERE name="张三"</code>。 <br>
+<strong>String table：</strong>操作的数据表的名称。 <br>
+<strong>ContentValues values：</strong>用于传递数据，通常我们通过ContentValues 类的对象的putXXX()方法封装数据，然后将数据添加进数据库。 <br>
+<strong>String whereClause：</strong>约束修改行的条件。相当于SQLite语句中“where name=？“内容。 <br>
+<strong>String[] whereArgs：</strong>与前一个参数对应约束删除行的条件。相当于”where name=”张三““中的”张三“。</p>
+<pre class="prettyprint"><code class="language-java hljs  has-numbering">        <span class="hljs-comment">//db数据库对象在前面已经创建，这里直接使用。</span>
+        ContentValues values = <span class="hljs-keyword">new</span> ContentValues();
+        values.put(<span class="hljs-string">"passwords"</span>, <span class="hljs-string">"abcd"</span>);
+        db.update(<span class="hljs-string">"user"</span>, values, <span class="hljs-string">"name=?"</span>, <span class="hljs-keyword">new</span> String[]{<span class="hljs-string">"张三"</span>});</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li></ul></pre>
+<h3 id="查"><a></a><strong>查</strong></h3>
+<p>　　对于”查“操作，SQLiteDatabase提供了多种方法。 <br>
+　　我们先列举一条SQLite中的修改语句：<code>SELECT  passwords="123" FROM user</code>。 <br>
+<strong>（1）使用SQL语句进行查询。这里SQLiteDatabase提供了方法：</strong></p>
+<ul>
+<li><strong>rawQuery (String sql, String[] selectionArgs)：</strong>该方法返回 Cursor类的对象，用于操作查询的结果。</li>
+</ul>
+<pre class="prettyprint"><code class="language-java hljs  has-numbering">        String sql = <span class="hljs-string">"select * from user"</span>;
+        Cursor cursor = db.rawQuery(sql, <span class="hljs-keyword">null</span>);
+        cursor.moveToFirst();<span class="hljs-comment">//转移到结果的第一行</span>
+        <span class="hljs-keyword">while</span>(!cursor.isAfterLast()){
+            String name=cursor.getString(cursor.getColumnIndex(<span class="hljs-string">"name"</span>));
+            String passwords=cursor.getString(cursor.getColumnIndex(<span class="hljs-string">"passwords"</span>));
+            Log.d(<span class="hljs-string">"data"</span>, <span class="hljs-string">"name="</span> + name + <span class="hljs-string">"   password="</span> + passwords);
+            cursor.moveToNext();
+        }</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li></ul></pre>
+<p><strong>（2）使用SQLiteDatabase内定方法查询：</strong></p>
+<ul>
+<li><strong>query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit)：</strong>这个方法有N多个参数啊……String table是操作的数据表的名称；String selection是筛选的字段选项；String[] selectionArgs是字段选项对应的值;String groupBy是筛选结果的分组依据；String having是在由groupBy子句创建的分组上设置条件；String orderBy是结果的排序方式，String limit是筛选结果的显示限制，例如“2， 3”是指从筛选结果的第2个开始显示3个。</li>
+</ul>
+<pre class="prettyprint"><code class="language-java hljs  has-numbering">        Cursor cursor=db.query(<span class="hljs-string">"user"</span>, <span class="hljs-keyword">null</span>, <span class="hljs-keyword">null</span>, <span class="hljs-keyword">null</span>, <span class="hljs-keyword">null</span>,<span class="hljs-keyword">null</span>, <span class="hljs-string">" id desc"</span>, <span class="hljs-string">"2,3"</span>);<span class="hljs-comment">//limit语句  offset, num</span>
+        cursor.moveToFirst();<span class="hljs-comment">//转移到结果的第一行</span>
+        <span class="hljs-keyword">while</span>(!cursor.isAfterLast()){
+            String name=cursor.getString(cursor.getColumnIndex(<span class="hljs-string">"name"</span>));
+            String passwords=cursor.getString(cursor.getColumnIndex(<span class="hljs-string">"passwords"</span>));
+            Log.d(<span class="hljs-string">"data"</span>, <span class="hljs-string">"   name="</span> + name + <span class="hljs-string">"   password="</span> + passwords);
+            cursor.moveToNext();
+        }</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li></ul></pre>
+<p>　　这样数据库的操作和存储就差不多了哦，对于数据库的操作也就无非是这四种……</p>                                    
+                
+                    
+</div>
+</body>
+
+</html>

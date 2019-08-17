@@ -1,0 +1,206 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>delphi10开发的爬站仿站程序原理及源代码(整站下载htm,css,js,jpg...)</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><p>发现一个很酷的网页，想把它保存下来怎么办？ ？？</p>
+<p>网上找离线下载工具？ 找了半天，没有找到合适的。</p>
+<p>决定自己写一个， 我想可能以后会用到。</p>
+<p>第一种方法是使用wget方式下载。 比较简单，但是一些高级的自定义的无法实现。</p>
+<h1>一、实现原理</h1>
+<p>????通过<b>Twebbrowser</b>组件获取到
+<b><a href="https://blog.csdn.net/byc6352/article/details/99401315">IHTMLDocument2</a></b>接口，<b>IHTMLDocument2</b>接口的以下四个属性，可获取到网页内部链接：</p>
+<ol>
+<li>.scripts    //脚本文件集合（.js）；</li>
+<li>.styleSheets    //css文件集合(.css)；</li>
+<li>.images          //图片文件集合(.jpg)；</li>
+<li>.links             //超链接集合(.htm)；</li>
+</ol>
+<p>然后将这些链接放到一个【待下载链接数组】里面和一个【超链接集合数组（.links ）】里面，启动下载文件子线程依次下载第一个数组里面的链接文件。紧接着加载解析第二个【超链接集合数组（.links）】里面的第二个超链接页面，.....依次类推，直到把【超链接集合数组（.links）】里面的页面加载分析完，整个站点的网页也就分析下载完成了。</p>
+<p></p>
+<p><img src="https://img-blog.csdnimg.cn/20190813141410603.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2J5YzYzNTI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h1>二、开发步骤</h1>
+<h5>1、通过Twebbrowser加载网页，得到IHTMLDocument2接口。</h5>
+<pre><code>procedure TfMain.web2DocumentComplete(ASender: TObject; const pDisp: IDispatch;
+  const URL: OleVariant);
+var
+  doc:IHTMLDocument2;
+begin
+.................................
+    doc:=web2.Document as IHTMLDocument2; //得到接口；
+    getUrlInPage(doc); //解析网页
+................................
+   //当前页面解析完成后，加载下一个页面：
+    web2.Navigate(mPages[mk]); //加载超链数组里面的页面；
+end;
+//设置不弹出脚本提示
+procedure TfMain.web2NavigateComplete2(ASender: TObject; const pDisp: IDispatch;
+  const URL: OleVariant);
+begin
+  web2.Silent := True;
+end;
+</code></pre>
+<h5>2、通过IHTMLDocument2接口解析页面里面的链接。</h5>
+<p>????共有四类链接：<b>scripts,styleSheets,images和links</b>。其它未列出的链接，可自行补充。</p>
+<pre><code>procedure getUrlInPage(doc:IHTMLDocument2);//获取网页中的文件链接
+Var
+  all:IHTMLElementCollection;
+  sheets:IHTMLstyleSheetsCollection;
+  len,I,p:integer;
+  item:OleVariant;
+  url:string;
+begin
+  //网页中的js文件：
+  all:=doc.scripts;
+  len:=all.length;
+  for I:=0 to len-1 do begin
+    item:=all.item(I,varempty);
+    url:=item.src;
+    url:=trim(url);
+    if(length(url)=0)then continue;
+    if(pos('/',url)=1)then url:=mProtocol+mSite+url;
+    if(pos(msite,url)=0)then continue;  //排除外链
+    if(pos(url,mDowns.Text)&gt;0)then continue;//排除重复链接
+    mDowns.add(url); //添加至待下载数组
+  end;
+  //网页中的css文件：
+  sheets:=doc.styleSheets;
+  len:=sheets.length;
+  for I:=0 to len-1 do begin
+    item:=sheets.item(I);               //EmpryParam亦可
+    url:=item.href;
+    url:=trim(url);
+    if(length(url)=0)then continue;
+    if(pos('/',url)=1)then url:=mProtocol+mSite+url;
+    if(pos(url,mDowns.Text)&gt;0)then continue;//排除重复链接
+    mDowns.add(url); //添加至待下载数组
+  end;
+  //网页中的图片文件：
+  all:=doc.images;
+  len:=all.length;
+  for I:=0 to len-1 do begin
+    item:=all.item(I,varempty);
+    url:=item.src;
+    url:=trim(url);
+    if(length(url)=0)then continue;
+    if(pos('/',url)=1)then url:=mProtocol+mSite+url;
+    if(pos(url,mDowns.Text)&gt;0)then continue;//排除重复链接
+    mDowns.add(url); //添加至待下载数组
+  end;
+  //网页中的超链接文件：
+  all:=doc.links;
+  len:=all.length;
+  for I:=0 to len-1 do begin
+    item:=all.item(I,varempty);
+    url:=item.href;
+    url:=trim(url);
+    if pos('htm',url)=0 then continue;
+    if(pos('/',url)=1)then url:=mProtocol+msite+url;
+    if (pos(msite,url)=0) or (pos(msite,url)&gt;10) then continue;
+    p:=pos('?',url);
+    if(p&gt;0)then url:=leftstr(url,p-1);
+    p:=pos('#',url);
+    if(p&gt;0)then url:=leftstr(url,p-1);
+    if(pos(url,mDowns.Text)&gt;0)then continue;//排除重复链接
+    mDowns.add(url);  //添加至待下载数组
+    mPages.Add(url); //添加至页面数组
+  end;
+
+end;
+</code></pre>
+<h5>3、下载文件子线程。</h5>
+<p>????下载文件子线程根据mDowns数组里面的链接下载文件，独立于解析页面主线程。当数组里面的文件下载完毕后，等待30秒，如果还未有新的链接加入数组，则退出下载线程，结束下载。</p>
+<p>????下载文件子线程使用微软提供的<b>UrlDownloadToFile()</b>函数。具体用法参见：</p>
+<p><a href="https://blog.csdn.net/byc6352/article/details/99326140">https://blog.csdn.net/byc6352/article/details/99326140</a></p>
+<pre><code>//------------------------------------------下载线程区------------------------------------------
+function ThreadProc(param: LPVOID): DWORD; stdcall;
+var
+  i,k:integer;//当前下载序号
+  url:string;
+begin
+  i:=0;
+  k:=0;
+  while bDownFiles do begin
+    if(i&gt;=mDowns.Count)then begin if k&gt;30 then break;sleep(1000);k:=k+1;continue;end;  //30秒未有新链接加入则退出线程。
+    url:=mDowns[i];
+    PostMessage(fMain.Handle, WM_DOWN_WORK,0,i);
+    downloadfile(url);
+    i:=i+1;
+    k:=0;
+  end;
+  PostMessage(fMain.Handle, WM_DOWN_WORK,1,i);
+  Result := 0;
+end;
+
+procedure downloadFilesThread();
+var
+  threadId: TThreadID;
+begin
+  bDownFiles:=true;
+  CreateThread(nil, 0, @ThreadProc, nil, 0, threadId);
+end;
+
+//------------------------------------------公共函数区----------------------------------------------
+//uses urlmon;  
+function DownloadToFile(Source, Dest: string): Boolean;
+begin
+  try
+    Result := UrlDownloadToFile(nil, PChar(source), PChar(Dest), 0, nil) = 0;
+  except
+    Result := False;
+  end;
+end;
+//下载指定链接的文件
+procedure downloadfile(url:string);
+var
+  localpath,remotepath:string;
+begin
+  remotepath:=url;
+  if pos('/',remotepath)=1 then remotepath:=mProtocol+msite+remotepath;  //转换为绝对路径才能下载
+  localpath:=url2file(remotepath);   //链接转换为本地文件路径
+  if(fileexists(localpath))then exit ;  //如果本地已经存在，则不下载
+  DownloadToFile(remotepath,localpath);
+end;
+</code></pre>
+<h5>4、链接转换为本地文件路径。</h5>
+<pre><code>//链接转换为本地文件路径
+function url2file(url:string):string;
+var
+  p,i:integer;
+  s,dir,fullDir:string; //forcedirectories(mWorkDir);
+begin
+  s:=url;
+  p:=pos('/',s);
+  dir:=leftstr(s,p-1);
+  if(dir='http:')then s:=rightstr(s,length(s)-7);  //去除http头部
+  if(dir='https:')then s:=rightstr(s,length(s)-8);  //去除https头部
+  p:=pos('/',s);
+  dir:=leftstr(s,p-1);
+  if(dir&lt;&gt;msite)then s:=msite+s;  //添加主站地址
+  fullDir:=mWorkDir;  //mWorkDir程序工作目录；
+  p:=pos('/',s);
+  while p&gt;0 do begin
+    dir:=leftstr(s,p-1);
+    fullDir:=fullDir+'\'+dir;
+    if(not directoryexists(fullDir))then forcedirectories(fullDir);  //创建本地文件目录
+    s:=rightstr(s,length(s)-length(dir)-1);
+    p:=pos('/',s);
+  end;
+  p:=pos('?',s);  //排除链接里面?后面的内容；
+  if(p&gt;0)then s:=leftstr(s,p-1);
+  result:=fullDir+'\'+s;
+end;
+</code></pre>
+<p>????主要流程分析到此。可通过如下链接下载到完整代码：</p>
+<p><a href="https://download.csdn.net/download/byc6352/11539871">https://download.csdn.net/download/byc6352/11539871</a></p>
+<p>????该程序是delphi10.3开发的简易网页分析与整站下载程序，包含源代码。可自行扩充。目前针对htm页面的整站下载，可自行扩充至php,asp,jsp等页面。是网站分析的好帮手！</p>
+</div>
+</body>
+
+</html>

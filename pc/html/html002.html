@@ -1,0 +1,375 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ajax 完整教程-(二)</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><article class="baidu_pl">
+<div id="article_content" class="article_content clearfix">
+
+<div id="content_views" class="markdown_views">
+<h2 id="web-20-一瞥"><a></a>Web 2.0 一瞥</h2>
+</div></div></article><p>我们需要一种方法使 发送的请求 和 接收的响应 只包含需要的数据而不是整个 HTML 页面。</p>
+<p>多数交互都是在已有页面上增加细节、修改主体文本或者覆盖原有数据。这些情况下，Ajax 和 Web 2.0 方法允许在不 更新整个 HTML 页面的情况下发送和接收数据。</p>
+<h2 id="xmlhttprequest-简介"><a></a>XMLHttpRequest 简介</h2>
+<p>XMLHttpRequest:一个 JavaScript 对象,它是Web 2.0、Ajax 和大部分其他内容的核心。下面给出将要用于该对象的很少的几个方法和属性:</p>
+<blockquote>
+  <p>open()：建立到服务器的新请求。 <br>
+  send()：向服务器发送请求。 <br>
+  abort()：退出当前请求。  <br>
+  readyState：提供当前 HTML 的就绪状态。 <br>
+  responseText：服务器返回的请求响应文本。</p>
+</blockquote>
+<p>用 XMLHttpRequest 做什么? <br>
+这些方法和属性都与发送请求及处理响应有关。事实上，如果看到 XMLHttpRequest 的所有方法和属性，就会发现它们都 与非常简单的请求/响应模型有关。</p>
+<p>首先需要创建一个新变量并赋给它一个 XMLHttpRequest 对象实例。</p>
+<p><em>清单 1. 创建新的 XMLHttpRequest 对象</em></p>
+<pre class="prettyprint"><code class="hljs xml has-numbering"><span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">language</span>=<span class="hljs-value">"javascript"</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text/javascript"</span>&gt;</span><span class="javascript"> 
+        <span class="hljs-keyword">var</span> request =<span class="hljs-keyword">new</span> XMLHttpRequest(); 
+</span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span></code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li></ul></pre>
+<p>JavaScript 不要求指定变量类型，因此不需要像 清单 2 那样做（在 Java 语言中可能需要这样）。</p>
+<p><em>清单 2. 创建 XMLHttpRequest 的 Java 伪代码</em></p>
+<pre class="prettyprint"><code class="hljs vbscript has-numbering">XMLHttpRequest <span class="hljs-built_in">request</span> = <span class="hljs-keyword">new</span> XMLHttpRequest();</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li></ul></pre>
+<p>因此在 JavaScript 中用 var 创建一个变量，给它一个名字（如 “request”），然后赋给它一个新的 XMLHttpRequest 实例。此后就可以在函数中使用该对象了。</p>
+<p><strong>错误处理</strong></p>
+<p>在实际上各种事情都可能出错，而上面的代码没有提供任何错误处理。较好的办法是<strong>创建该对象，并在出现问题时优雅地退出</strong>。比如，任何较早的浏览器（不论您是否相信，仍然有人在使用老版本的 Netscape Navigator）都不支持 XMLHttpRequest，您需要让这些用户知道有些地方出了问题。清单 3 说明如何创建该对象，以便在出现问题的时候发出 JavaScript 警告。</p>
+<p><em>清单 3. 创建具有错误处理能力的 XMLHttpRequest</em></p>
+<pre class="prettyprint"><code class="hljs xml has-numbering"><span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">language</span>=<span class="hljs-value">"javascript"</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text/javascript"</span>&gt;</span><span class="javascript">
+    <span class="hljs-keyword">var</span> request = <span class="hljs-literal">false</span>;
+    <span class="hljs-keyword">try</span> {
+      request = <span class="hljs-keyword">new</span> XMLHttpRequest();
+    } <span class="hljs-keyword">catch</span> (failed) {
+      request = <span class="hljs-literal">false</span>;
+    }
+
+    <span class="hljs-keyword">if</span> (!request)
+      alert(<span class="hljs-string">"Error initializing XMLHttpRequest!"</span>);
+</span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span></code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li><li>11</li></ul></pre>
+<p>一定要理解这些步骤：</p>
+<blockquote>
+  <p>1、创建一个新变量 request 并赋值 false。后面将使用 false 作为判定条件，它表示还没有创建 XMLHttpRequest对象。 <br>
+  2、增加 try/catch 块：  <br>
+    <em>1）尝试创建 XMLHttpRequest 对象。</em> <br>
+    <em>2）如果失败（catch (failed)）则保证 request 的值仍然为false。</em> <br>
+  3、检查 request 是否仍为 false（如果一切正常就不会是 false）。 <br>
+  4、如果出现问题（request 是 false）则使用 JavaScript 警告通知用户出现了问题。 </p>
+</blockquote>
+<p>现在已经得到了一段带有错误检查的 XMLHttpRequest 对象创建代码，还可以告诉您哪儿出了问题。</p>
+<p>应付 Microsoft <br>
+我们需要采用不同的方法处理 Microsoft 浏览器。 <br>
+<em>清单 4. 增加对 Microsoft 浏览器的支持</em></p>
+<pre class="prettyprint"><code class="hljs xml has-numbering"><span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">language</span>=<span class="hljs-value">"javascript"</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text/javascript"</span>&gt;</span><span class="javascript">
+    <span class="hljs-keyword">var</span> request = <span class="hljs-literal">false</span>;
+    <span class="hljs-keyword">try</span> {
+      request = <span class="hljs-keyword">new</span> XMLHttpRequest();
+    } <span class="hljs-keyword">catch</span> (trymicrosoft) {
+      <span class="hljs-keyword">try</span> {
+        request = <span class="hljs-keyword">new</span> ActiveXObject(<span class="hljs-string">"Msxml2.XMLHTTP"</span>);
+      } <span class="hljs-keyword">catch</span> (othermicrosoft) {
+        <span class="hljs-keyword">try</span> {
+          request = <span class="hljs-keyword">new</span> ActiveXObject(<span class="hljs-string">"Microsoft.XMLHTTP"</span>);
+        } <span class="hljs-keyword">catch</span> (failed) {
+          request = <span class="hljs-literal">false</span>;
+        }
+      }
+    }
+
+    <span class="hljs-keyword">if</span> (!request)
+      alert(<span class="hljs-string">"Error initializing XMLHttpRequest!"</span>);
+</span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span></code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li><li>11</li><li>12</li><li>13</li><li>14</li><li>15</li><li>16</li><li>17</li><li>18</li><li>19</li></ul></pre>
+<p>很容易被这些花括号迷住了眼睛，因此下面分别介绍每一步：</p>
+<blockquote>
+  <p>1、创建一个新变量 request 并赋值 false。使用 false 作为判断条件，它表示还没有创建 XMLHttpRequest对象。 <br>
+  2、增加 try/catch 块：  <br>
+      <em>1）尝试创建 XMLHttpRequest 对象。</em>  <br>
+      <em>2）如果失败（catch (trymicrosoft)）：</em>  <br>
+              <em>1&gt;尝试使用较新版本的 Microsoft 浏览器创建 Microsoft 兼容的对象（Msxml2.XMLHTTP）。</em>  <br>
+              <em>2&gt; 如果失败（catch (othermicrosoft)）尝试使用较老版本的 Microsoft 浏览器创建 Microsoft 兼容的对象（Microsoft.XMLHTTP）。</em>  <br>
+      2）如果失败（catch (failed)）则保证 request 的值仍然为 false。 <br>
+      3、检查 request 是否仍然为 false（如果一切顺利就不会是 false）。 <br>
+      4、如果出现问题（request 是 false）则使用 JavaScript 警告通知用户出现了问题。</p>
+</blockquote>
+<p>这样修改代码之后再使用 Internet Explorer 试验，就应该看到已经创建的表单（没有错误消息）。</p>
+<p>静态与动态</p>
+<p>再看一看清单 1、3 和 4，注意，所有这些代码都直接嵌套在 script 标记中。像这种不放到方法或函数体中的 JavaScript 代码称为静态 JavaScript。就是说代码是在页面显示给用户之前的某个时候运行。（虽然根据规范不能完全精确地 知道这些代码何时运行对浏览器有什么影响，但是可以保证这些代码在用户能够与页面交互之前运行。）这也是多数 Ajax 程序员创建 XMLHttpRequest 对象的一般方式。</p>
+<p>就是说，也可以像 清单 5 那样将这些代码放在一个方法中。</p>
+<p><em>清单 5. 将 XMLHttpRequest 创建代码移动到方法中</em></p>
+<pre class="prettyprint"><code class="hljs xml has-numbering"><span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">language</span>=<span class="hljs-value">"javascript"</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text/javascript"</span>&gt;</span><span class="javascript">
+
+    <span class="hljs-keyword">var</span> request;
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createRequest</span><span class="hljs-params">()</span> {</span>
+      <span class="hljs-keyword">try</span> {
+        request = <span class="hljs-keyword">new</span> XMLHttpRequest();
+      } <span class="hljs-keyword">catch</span> (trymicrosoft) {
+        <span class="hljs-keyword">try</span> {
+          request = <span class="hljs-keyword">new</span> ActiveXObject(<span class="hljs-string">"Msxml2.XMLHTTP"</span>);
+        } <span class="hljs-keyword">catch</span> (othermicrosoft) {
+          <span class="hljs-keyword">try</span> {
+            request = <span class="hljs-keyword">new</span> ActiveXObject(<span class="hljs-string">"Microsoft.XMLHTTP"</span>);
+          } <span class="hljs-keyword">catch</span> (failed) {
+            request = <span class="hljs-literal">false</span>;
+          }
+        }
+      }
+
+      <span class="hljs-keyword">if</span> (!request)
+        alert(<span class="hljs-string">"Error initializing XMLHttpRequest!"</span>);
+    }
+</span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span></code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li><li>11</li><li>12</li><li>13</li><li>14</li><li>15</li><li>16</li><li>17</li><li>18</li><li>19</li><li>20</li><li>21</li><li>22</li><li>23</li></ul></pre>
+<p>如果按照这种方式编写代码，那么在处理 Ajax 之前需要调用该方法。因此还需要 清单 6 这样的代码。</p>
+<p><em>清单 6. 使用 XMLHttpRequest 的创建方法</em></p>
+<pre class="prettyprint"><code class="hljs xml has-numbering"><span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">language</span>=<span class="hljs-value">"javascript"</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text/javascript"</span>&gt;</span><span class="javascript">
+
+    <span class="hljs-keyword">var</span> request;
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createRequest</span><span class="hljs-params">()</span> {</span>
+      <span class="hljs-keyword">try</span> {
+        request = <span class="hljs-keyword">new</span> XMLHttpRequest();
+      } <span class="hljs-keyword">catch</span> (trymicrosoft) {
+        <span class="hljs-keyword">try</span> {
+          request = <span class="hljs-keyword">new</span> ActiveXObject(<span class="hljs-string">"Msxml2.XMLHTTP"</span>);
+        } <span class="hljs-keyword">catch</span> (othermicrosoft) {
+          <span class="hljs-keyword">try</span> {
+            request = <span class="hljs-keyword">new</span> ActiveXObject(<span class="hljs-string">"Microsoft.XMLHTTP"</span>);
+          } <span class="hljs-keyword">catch</span> (failed) {
+            request = <span class="hljs-literal">false</span>;
+          }
+        }
+      }
+
+      <span class="hljs-keyword">if</span> (!request)
+        alert(<span class="hljs-string">"Error initializing XMLHttpRequest!"</span>);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getCustomerInfo</span><span class="hljs-params">()</span> {</span>
+      createRequest();
+      <span class="hljs-comment">// 使用request变量进行一系列的操作</span>
+    }
+</span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span></code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li><li>11</li><li>12</li><li>13</li><li>14</li><li>15</li><li>16</li><li>17</li><li>18</li><li>19</li><li>20</li><li>21</li><li>22</li><li>23</li><li>24</li><li>25</li><li>26</li><li>27</li><li>28</li></ul></pre>
+<p>此代码惟一的问题是推迟了错误通知，这也是多数 Ajax 程序员不采用这一方法的原因。假设一个复杂的表单有 10 或 15 个字段、选择框等，当用户在第 14 个字段（按照表单顺序从上到下）输入文本时要激活某些 Ajax 代码。这时候运行 getCustomerInfo() 尝试创建一个 XMLHttpRequest 对象，但（对于本例来说）失败了。然后向用户显示一条警告，明确地告诉他们不能使用该应用程序。但用户已经花费了很多时间在表单中输入数据！这是非常令人讨厌的，而讨厌显然不会吸引用户再次访问您的网站。</p>
+<p>如果使用静态 JavaScript，用户在点击页面的时候很快就会看到错误信息。这样也很烦人，是不是？可能令用户错误地认为您的 Web 应用程序不能在他的浏览器上运行。不过，当然要比他们花费了 10 分钟输入信息之后再显示同样的错误要好。因此，我建议编写静态的代码，让用户尽可能早地发现问题。</p>
+<p><strong>用 XMLHttpRequest 发送请求</strong></p>
+<p>得到请求对象之后就可以进入请求/响应循环了。<strong>记住，XMLHttpRequest 惟一的目的是让您发送请求和接收响应</strong>。其他一切都是 JavaScript、CSS 或页面中其他代码的工作：改变用户界面、切换图像、解释服务器返回的数据。准备好 XMLHttpRequest 之后，就可以向服务器发送请求了。</p>
+<p><strong>欢迎使用沙箱</strong></p>
+<p>Ajax 采用一种沙箱安全模型。因此，Ajax 代码（具体来说就是 XMLHttpRequest 对象）只能对所在的同一个域发送请求。以后的文章中将进一步介绍安全和 Ajax，现在只要知道在本地机器上运行的代码只能对本地机器上的服务器端脚本发送请求。如果让 Ajax 代码在 <a href="http://www.breakneckpizza.com/" rel="nofollow">http://www.breakneckpizza.com/</a> 上运行，则必须 <a href="http://www.breakneck.com/" rel="nofollow">http://www.breakneck.com/</a> 中运行的脚本发送请求。</p>
+<p><strong>设置服务器 URL</strong></p>
+<p>首先要确定连接的服务器的 URL。这并不是 Ajax 的特殊要求，但仍然是建立连接所必需的，显然现在您应该知道如何构造 URL 了。多数应用程序中都会结合一些静态数据和用户处理的表单中的数据来构造该 URL。比如，清单 7 中的 JavaScript 代码获取电话号码字段的值并用其构造 URL。</p>
+<p><em>清单 7. 建立请求 URL</em></p>
+<pre class="prettyprint"><code class="hljs xml has-numbering"><span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">language</span>=<span class="hljs-value">"javascript"</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text/javascript"</span>&gt;</span><span class="javascript">
+       <span class="hljs-keyword">var</span> request = <span class="hljs-literal">false</span>;
+       <span class="hljs-keyword">try</span> {
+         request = <span class="hljs-keyword">new</span> XMLHttpRequest();
+       } <span class="hljs-keyword">catch</span> (trymicrosoft) {
+         <span class="hljs-keyword">try</span> {
+           request = <span class="hljs-keyword">new</span> ActiveXObject(<span class="hljs-string">"Msxml2.XMLHTTP"</span>);
+         } <span class="hljs-keyword">catch</span> (othermicrosoft) {
+           <span class="hljs-keyword">try</span> {
+             request = <span class="hljs-keyword">new</span> ActiveXObject(<span class="hljs-string">"Microsoft.XMLHTTP"</span>);
+           } <span class="hljs-keyword">catch</span> (failed) {
+             request = <span class="hljs-literal">false</span>;
+           }  
+         }
+       }
+
+       <span class="hljs-keyword">if</span> (!request)
+         alert(<span class="hljs-string">"Error initializing XMLHttpRequest!"</span>);
+
+       <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getCustomerInfo</span><span class="hljs-params">()</span> {</span>
+         <span class="hljs-keyword">var</span> phone = document.getElementById(<span class="hljs-string">"phone"</span>).value;
+         <span class="hljs-keyword">var</span> url = <span class="hljs-string">"/cgi-local/lookupCustomer.php?phone="</span> + <span class="hljs-built_in">escape</span>(phone);
+       }
+</span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span></code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li><li>11</li><li>12</li><li>13</li><li>14</li><li>15</li><li>16</li><li>17</li><li>18</li><li>19</li><li>20</li><li>21</li><li>22</li><li>23</li><li>24</li></ul></pre>
+<p>代码创建了一个新变量 phone，并把 ID 为 “phone” 的表单字段的值赋给它。</p>
+<p>清单 8 展示了这个表单的 XHTML，其中可以看到 phone 字段及其 id 属性。</p>
+<p><em>清单 8. Break Neck Pizza 表单</em></p>
+<pre class="prettyprint"><code class="hljs xml has-numbering"><span class="hljs-tag">&lt;<span class="hljs-title">body</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-title">img</span> <span class="hljs-attribute">src</span>=<span class="hljs-value">"breakneck-logo_4c.gif"</span> <span class="hljs-attribute">alt</span>=<span class="hljs-value">"Break Neck Pizza"</span> /&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">form</span> <span class="hljs-attribute">action</span>=<span class="hljs-value">"POST"</span>&gt;</span>
+       <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>Enter your phone number:
+            <span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text"</span> <span class="hljs-attribute">size</span>=<span class="hljs-value">"14"</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">"phone"</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"phone"</span> 
+               <span class="hljs-attribute">onChange</span>=<span class="hljs-value">"getCustomerInfo();"</span> /&gt;</span>
+       <span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+       <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>你的订单会被发送到:<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+       <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"address"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+       <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>你的订单类型:<span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+       <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-title">textarea</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">"order"</span> <span class="hljs-attribute">rows</span>=<span class="hljs-value">"6"</span> <span class="hljs-attribute">cols</span>=<span class="hljs-value">"50"</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"order"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">textarea</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+       <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"submit"</span> <span class="hljs-attribute">value</span>=<span class="hljs-value">"Order Pizza"</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"submit"</span> /&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-title">form</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">body</span>&gt;</span></code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li><li>11</li><li>12</li><li>13</li><li>14</li></ul></pre>
+<p>还要注意，当用户输入电话号码或者改变电话号码时，将触发 清单 8 所示的 getCustomerInfo() 方法。该方法取得电话号码并构造存储在 url 变量中的 URL 字符串。记住，由于 Ajax 代码是沙箱型的，因而只能连接到同一个域，实际上 URL 中不需要域名。该例中的脚本名为 /cgi-local/lookupCustomer.php。最后，电话号码作为 GET 参数附加到该脚本中：”phone=” + escape(phone)。</p>
+<p>如果以前没用见过 escape() 方法，它用于转义不能用明文正确发送的任何字符。比如，电话号码中的空格将被转换成字符 %20，从而能够在 URL 中传递这些字符。</p>
+<p>可以根据需要添加任意多个参数。比如，如果需要增加另一个参数，只需要将其附加到 URL 中并用 “与”（&amp;）字符分开 [第一个参数用问号（?）和脚本名分开]。</p>
+<p><strong>打开请求</strong></p>
+<p>有了要连接的 URL 后就可以配置请求了。可以用 XMLHttpRequest 对象的 open() 方法来完成。该方法有五个参数：</p>
+<blockquote>
+  <p>request-type：发送请求的类型。典型的值是 GET 或 POST，但也可以发送 HEAD 请求。 <br>
+  url：要连接的 URL。  <br>
+  asynch：如果希望使用异步连接则为 true，否则为 false。该参数是可选的，默认为 true。  <br>
+  username：如果需要身份验证，则可以在此指定用户名。该可选参数没有默认值。 <br>
+  password：如果需要身份验证，则可以在此指定口令。该可选参数没有默认值。</p>
+</blockquote>
+<p><strong>open() 是打开吗？</strong> <br>
+Internet 开发人员对 open() 方法到底做什么没有达成一致。但它实际上并不是 打开一个请求。如果监控 XHTML/Ajax 页面及其连接脚本之间的网络和数据传递，当调用 open() 方法时将看不到任何通信。</p>
+<p>通常使用其中的前三个参数。事实上，即使需要异步连接，也应该指定第三个参数为 “true”。这是默认值，但坚持明确指定请求是异步的还是同步的更容易理解。</p>
+<p>将这些结合起来，通常会得到 清单 9 所示的一行代码。</p>
+<p><em>清单 9. 打开请求</em></p>
+<pre class="prettyprint"><code class="hljs javascript has-numbering">   <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getCustomerInfo</span><span class="hljs-params">()</span> {</span>
+     <span class="hljs-keyword">var</span> phone = document.getElementById(<span class="hljs-string">"phone"</span>).value;
+     <span class="hljs-keyword">var</span> url = <span class="hljs-string">"/cgi-local/lookupCustomer.php?phone="</span> + <span class="hljs-built_in">escape</span>(phone);
+     request.open(<span class="hljs-string">"GET"</span>, url, <span class="hljs-literal">true</span>);
+   }</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li></ul></pre>
+<p>一旦设置好了 URL，其他就简单了。多数请求使用 GET 就够了（后面的文章中将看到需要使用 POST 的情况），再加上 URL，这就是使用 open() 方法需要的全部内容了。</p>
+<p><strong>挑战异步性</strong></p>
+<p>本系列的后面一篇文章中，我将用很多时间编写和使用异步代码，但是您应该明白为什么 open() 的最后一个参数这么重要。在一般的请求/响应模型中，比如 Web 1.0，客户机（浏览器或者本地机器上运行的代码）向服务器发出请求。该请求是同步的，换句话说，客户机等待服务器的响应。当客户机等待的时候，至少会用某种形式通知您在等待：</p>
+<blockquote>
+  <p>沙漏（特别是 Windows 上）。  <br>
+  旋转的皮球（通常在 Mac 机器上）。 <br>
+  应用程序基本上冻结了，然后过一段时间光标变化了。</p>
+</blockquote>
+<p><strong>而异步请求不 等待服务器响应</strong>。发送请求后应用程序继续运行。用户仍然可以在 Web 表单中输入数据，甚至离开表单。服务器悄悄地响应请求，完成后告诉原来的请求者工作已经结束。</p>
+<p><strong>发送请求</strong></p>
+<p>一旦用 open() 配置好之后，就可以发送请求了。</p>
+<p>send() 只有一个参数，就是要发送的内容。但是在考虑这个方法之前，回想一下前面已经通过 URL 本身发送过数据了：</p>
+<pre class="prettyprint"><code class="hljs javascript has-numbering"><span class="hljs-keyword">var</span> url = <span class="hljs-string">"/cgi-local/lookupCustomer.php?phone="</span> + <span class="hljs-built_in">escape</span>(phone);</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li></ul></pre>
+<p><strong><em>虽然可以使用 send() 发送数据，但也能通过 URL 本身发送数据</em></strong>。事实上，GET 请求（在典型的 Ajax 应用中大约占 80%）中，用 URL 发送数据要容易得多。如果需要发送安全信息或 XML，可能要考虑使用 send() 发送内容。如果不需要通过 send() 传递数据，则只要传递 null 作为该方法的参数即可。</p>
+<p><em>清单 10. 发送请求</em></p>
+<pre class="prettyprint"><code class="hljs javascript has-numbering">   <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getCustomerInfo</span><span class="hljs-params">()</span> {</span>
+     <span class="hljs-keyword">var</span> phone = document.getElementById(<span class="hljs-string">"phone"</span>).value;
+     <span class="hljs-keyword">var</span> url = <span class="hljs-string">"/cgi-local/lookupCustomer.php?phone="</span> + <span class="hljs-built_in">escape</span>(phone);
+     request.open(<span class="hljs-string">"GET"</span>, url, <span class="hljs-literal">true</span>);
+     request.send(<span class="hljs-literal">null</span>);
+   }</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li></ul></pre>
+<p><strong>指定回调方法</strong></p>
+<p>现在我们所做的只有很少一点是新的、革命性的或异步的。必须承认，open() 方法中 “true” 这个小小的关键字建立了异步请求。但是除此之外，这些代码与用 Java servlet 及 JSP、PHP 或 Perl 编程没有什么两样。那么 Ajax 和 Web 2.0 最大的秘密是什么呢？<strong>秘密就在于 XMLHttpRequest 的一个简单属性 onreadystatechange</strong>。</p>
+<p>首先一定要理解这些代码中的流程（如果需要请回顾 清单 10）。建立其请求然后发出请求。此外，因为是异步请求，所以 JavaScript 方法（例子中的 getCustomerInfo()）不会等待服务器。因此代码将继续执行，就是说，将退出该方法而把控制返回给表单。用户可以继续输入信息，应用程序不会等待服务器。</p>
+<p>这就提出了一个有趣的问题：服务器完成了请求之后会发生什么？答案是什么也不发生，至少对现在的代码而言如此！显然这样不行，因此服务器在完成通过 XMLHttpRequest 发送给它的请求处理之后需要某种指示说明怎么做。</p>
+<p>在 JavaScript 中引用函数：</p>
+<blockquote>
+  <p>JavaScript 是一种弱类型的语言，可以用变量引用任何东西。因此如果声明了一个函数 updatePage()，JavaScript 也将该函数名看作是一个变量。换句话说，可用变量名 updatePage 在代码中引用函数。</p>
+</blockquote>
+<p><em>清单 11. 设置回调方法</em></p>
+<pre class="prettyprint"><code class="hljs javascript has-numbering">   <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getCustomerInfo</span><span class="hljs-params">()</span> {</span>
+     <span class="hljs-keyword">var</span> phone = document.getElementById(<span class="hljs-string">"phone"</span>).value;
+     <span class="hljs-keyword">var</span> url = <span class="hljs-string">"/cgi-local/lookupCustomer.php?phone="</span> + <span class="hljs-built_in">escape</span>(phone);
+     request.open(<span class="hljs-string">"GET"</span>, url, <span class="hljs-literal">true</span>);
+     request.onreadystatechange = updatePage;
+     request.send(<span class="hljs-literal">null</span>);
+   }</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li></ul></pre>
+<p>需要特别注意的是该属性在代码中设置的位置 —— 它是在调用 send() 之前 设置的。发送请求之前必须设置该属性，这样服务器在回答完成请求之后才能查看该属性。现在剩下的就只有编写 updatePage() 方法了，这是本文最后一节要讨论的重点。</p>
+<p><strong>处理服务器响应</strong></p>
+<p>发送请求，用户高兴地使用 Web 表单（同时服务器在处理请求），而现在服务器完成了请求处理。服务器查看 onreadystatechange 属性确定要调用的方法。除此以外，可以将您的应用程序看作其他应用程序一样，无论是否异步。换句话说，不一定要采取特殊的动作编写响应服务器的方法，只需要改变表单，让用户访问另一个 URL 或者做响应服务器需要的任何事情。这一节我们重点讨论对服务器的响应和一种典型的动作 —— 即时改变用户看到的表单中的一部分。</p>
+<p><strong>回调和 Ajax</strong></p>
+<p>现在我们已经看到如何告诉服务器完成后应该做什么：<strong>将 XMLHttpRequest 对象的 onreadystatechange 属性设置为要运行的函数名</strong>。这样，<strong>当服务器处理完请求后就会自动调用该函数</strong>。也不需要担心该函数的任何参数。我们从一个简单的方法开始，如 清单 12 所示。</p>
+<p><em>清单 12. 回调方法的代码</em></p>
+<pre class="prettyprint"><code class="hljs xml has-numbering"><span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">language</span>=<span class="hljs-value">"javascript"</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text/javascript"</span>&gt;</span><span class="javascript">
+   <span class="hljs-keyword">var</span> request = <span class="hljs-literal">false</span>;
+   <span class="hljs-keyword">try</span> {
+     request = <span class="hljs-keyword">new</span> XMLHttpRequest();
+   } <span class="hljs-keyword">catch</span> (trymicrosoft) {
+     <span class="hljs-keyword">try</span> {
+       request = <span class="hljs-keyword">new</span> ActiveXObject(<span class="hljs-string">"Msxml2.XMLHTTP"</span>);
+     } <span class="hljs-keyword">catch</span> (othermicrosoft) {
+       <span class="hljs-keyword">try</span> {
+         request = <span class="hljs-keyword">new</span> ActiveXObject(<span class="hljs-string">"Microsoft.XMLHTTP"</span>);
+       } <span class="hljs-keyword">catch</span> (failed) {
+         request = <span class="hljs-literal">false</span>;
+       }  
+     }
+   }
+
+   <span class="hljs-keyword">if</span> (!request)
+     alert(<span class="hljs-string">"Error initializing XMLHttpRequest!"</span>);
+
+   <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getCustomerInfo</span><span class="hljs-params">()</span> {</span>
+     <span class="hljs-keyword">var</span> phone = document.getElementById(<span class="hljs-string">"phone"</span>).value;
+     <span class="hljs-keyword">var</span> url = <span class="hljs-string">"/cgi-local/lookupCustomer.php?phone="</span> + <span class="hljs-built_in">escape</span>(phone);
+     request.open(<span class="hljs-string">"GET"</span>, url, <span class="hljs-literal">true</span>);
+     request.onreadystatechange = updatePage;
+     request.send(<span class="hljs-literal">null</span>);
+   }
+
+   <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updatePage</span><span class="hljs-params">()</span> {</span>
+     alert(<span class="hljs-string">"Server is done!"</span>);
+   }
+</span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span></code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li><li>11</li><li>12</li><li>13</li><li>14</li><li>15</li><li>16</li><li>17</li><li>18</li><li>19</li><li>20</li><li>21</li><li>22</li><li>23</li><li>24</li><li>25</li><li>26</li><li>27</li><li>28</li><li>29</li><li>30</li><li>31</li></ul></pre>
+<p>它仅仅发出一些简单的警告，告诉您服务器什么时候完成了任务。在自己的网页中试验这些代码，然后在浏览器中打开（如果希望查看该例中的 XHTML，请参阅 清单 8）。输入电话号码然后离开该字段，将看到一个弹出的警告窗口（如 图 3 所示），但是点击 OK 又出现了……</p>
+<p><em>根据浏览器的不同，在表单停止弹出警告之前会看到两次、三次甚至四次警告。这是怎么回事呢？原来我们还没有考虑 HTTP 就绪状态，这是请求/响应循环中的一个重要部分。</em></p>
+<p><strong>HTTP 就绪状态</strong></p>
+<p>前面提到，服务器在完成请求之后会在 XMLHttpRequest 的 onreadystatechange 属性中查找要调用的方法。这是真的，但还不完整。<strong>事实上，每当 HTTP 就绪状态改变时它都会调用该方法</strong>。这意味着什么呢？首先必须理解 HTTP 就绪状态。</p>
+<p>HTTP 就绪状态表示请求的状态或情形。它用于确定该请求是否已经开始、是否得到了响应或者请求/响应模型是否已经完成。它还可以帮助确定读取服务器提供的响应文本或数据是否安全。在 Ajax 应用程序中需要了解五种就绪状态：</p>
+<blockquote>
+  <p>0：请求没有发出（在调用 open() 之前）。 <br>
+  1：请求已经建立但还没有发出（调用 send() 之前）。  <br>
+  2：请求已经发出正在处理之中（这里通常可以从响应得到内容头部）。 <br>
+  3：请求已经处理，响应中通常有部分数据可用，但是服务器还没有完成响应。 <br>
+  4：响应已完成，可以访问服务器响应并使用它。</p>
+</blockquote>
+<p>与大多数跨浏览器问题一样，这些就绪状态的使用也不尽一致。您也许期望任务就绪状态从 0 到 1、2、3 再到 4，但实际上很少是这种情况。一些浏览器从不报告 0 或 1 而直接从 2 开始，然后是 3 和 4。其他浏览器则报告所有的状态。还有一些则多次报告就绪状态 1。在上一节中看到，服务器多次调用 updatePage()，每次调用都会弹出警告框 —— 可能和预期的不同！</p>
+<p>对于 Ajax 编程，需要直接处理的惟一状态就是就绪状态 4，它表示服务器响应已经完成，可以安全地使用响应数据了。基于此，回调方法中的第一行应该如 清单 13 所示。</p>
+<p><em>清单 13. 检查就绪状态</em></p>
+<pre class="prettyprint"><code class="hljs javascript has-numbering">   <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updatePage</span><span class="hljs-params">()</span> {</span>
+     <span class="hljs-keyword">if</span> (request.readyState == <span class="hljs-number">4</span>)
+       alert(<span class="hljs-string">"Server is done!"</span>);   
+   }</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li></ul></pre>
+<p>修改后就可以保证服务器的处理已经完成。尝试运行新版本的 Ajax 代码，现在就会看到与预期的一样，只显示一次警告信息了。</p>
+<p>HTTP 状态码</p>
+<p>虽然 清单 13 中的代码看起来似乎不错，但是还有一个问题 —— <strong>如果服务器响应请求并完成了处理但是报告了一个错误怎么办</strong>？要知道，服务器端代码应该明白它是由 Ajax、JSP、普通 HTML 表单或其他类型的代码调用的，但只能使用传统的 Web 专用方法报告信息。而在 Web 世界中，HTTP 代码可以处理请求中可能发生的各种问题。</p>
+<p>比方说，您肯定遇到过输入了错误的 URL 请求而得到 404 错误码的情形，它表示该页面不存在。这仅仅是 HTTP 请求能够收到的众多错误码中的一种。表示所访问数据受到保护或者禁止访问的 403 和 401 也很常见。无论哪种情况，这些错误码都是从完成的响应 得到的。换句话说，服务器履行了请求（即 HTTP 就绪状态是 4）但是没有返回客户机预期的数据。</p>
+<p>因此除了就绪状态外，还需要检查 HTTP 状态。我们期望的状态码是 200，它表示一切顺利。如果就绪状态是 4 而且状态码是 200，就可以处理服务器的数据了，而且这些数据应该就是要求的数据（而不是错误或者其他有问题的信息）。因此还要在回调方法中增加状态检查，如 清单 14 所示。</p>
+<p><em>清单 14. 检查 HTTP 状态码</em></p>
+<pre class="prettyprint"><code class="hljs javascript has-numbering">   <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updatePage</span><span class="hljs-params">()</span> {</span>
+     <span class="hljs-keyword">if</span> (request.readyState == <span class="hljs-number">4</span>)
+       <span class="hljs-keyword">if</span> (request.status == <span class="hljs-number">200</span>)
+         alert(<span class="hljs-string">"Server is done!"</span>);
+   }</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li></ul></pre>
+<p>为了增加更健壮的错误处理并尽量避免过于复杂，可以增加一两个状态码检查，请看一看 清单 15 中修改后的 updatePage() 版本。</p>
+<p><em>清单 15. 增加一点错误检查</em></p>
+<pre class="prettyprint"><code class="hljs vbscript has-numbering">   <span class="hljs-keyword">function</span> updatePage() {
+     <span class="hljs-keyword">if</span> (<span class="hljs-built_in">request</span>.readyState == <span class="hljs-number">4</span>)
+       <span class="hljs-keyword">if</span> (<span class="hljs-built_in">request</span>.status == <span class="hljs-number">200</span>)
+         alert(<span class="hljs-string">"Server is done!"</span>);
+       <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-built_in">request</span>.status == <span class="hljs-number">404</span>)
+         alert(<span class="hljs-string">"Request URL does not exist"</span>);
+       <span class="hljs-keyword">else</span>
+         alert(<span class="hljs-string">"Error: status code is "</span> + <span class="hljs-built_in">request</span>.status);
+   }</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li></ul></pre>
+<p>现在将 getCustomerInfo() 中的 URL 改为不存在的 URL 看看会发生什么。应该会看到警告信息说明要求的 URL 不存在 —— 好极了！很难处理所有的错误条件，但是这一小小的改变能够涵盖典型 Web 应用程序中 80% 的问题。</p>
+<p><strong>读取响应文本</strong></p>
+<p>现在可以确保请求已经处理完成（通过就绪状态），服务器给出了正常的响应（通过状态码），最后我们可以处理服务器返回的数据了。返回的数据保存在 XMLHttpRequest 对象的 responseText 属性中。</p>
+<p>关于 responseText 中的文本内容，比如格式和长度，有意保持含糊。这样服务器就可以将文本设置成任何内容。比方说，一种脚本可能返回逗号分隔的值，另一种则使用管道符（即 | 字符）分隔的值，还有一种则返回长文本字符串。何去何从由服务器决定。</p>
+<p>在本文使用的例子中，服务器返回客户的上一个订单和客户地址，中间用管道符分开。然后使用订单和地址设置表单中的元素值，清单 16 给出了更新显示内容的代码。</p>
+<p><em>清单 16. 处理服务器响应</em></p>
+<pre class="prettyprint"><code class="hljs vbscript has-numbering">  <span class="hljs-keyword">function</span> updatePage() {
+     <span class="hljs-keyword">if</span> (<span class="hljs-built_in">request</span>.readyState == <span class="hljs-number">4</span>) {
+       <span class="hljs-keyword">if</span> (<span class="hljs-built_in">request</span>.status == <span class="hljs-number">200</span>) {
+         var <span class="hljs-built_in">response</span> = <span class="hljs-built_in">request</span>.responseText.<span class="hljs-built_in">split</span>(<span class="hljs-string">"|"</span>);
+         document.getElementById(<span class="hljs-string">"order"</span>).value = <span class="hljs-built_in">response</span>[<span class="hljs-number">0</span>];
+         document.getElementById(<span class="hljs-string">"address"</span>).innerHTML =
+           <span class="hljs-built_in">response</span>[<span class="hljs-number">1</span>].<span class="hljs-built_in">replace</span>(/\n/g, <span class="hljs-string">""</span>);
+       } <span class="hljs-keyword">else</span>
+         alert(<span class="hljs-string">"status is "</span> + <span class="hljs-built_in">request</span>.status);
+     }
+   }
+</code><div class="hljs-button {2}"></div>
+<ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li><li>11</li></ul></pre>
+<p>首先，得到 responseText 并使用 JavaScript split() 方法从管道符分开。得到的数组放到 response 中。数组中的第一个值 —— 上一个订单 —— 用 response[0] 访问，被设置为 ID 为 “order” 的字段的值。第二个值 response[1]，即客户地址，则需要更多一点处理。因为地址中的行用一般的行分隔符（“\n”字符）分隔，代码中需要用 XHTML 风格的行分隔符 <br> 来代替。替换过程使用 replace() 函数和正则表达式完成。最后，修改后的文本作为 HTML 表单 div 中的内部 HTML。结果就是表单突然用客户信息更新了，如图 4 所示。</p>
+<p>结束本文之前，我还要介绍 XMLHttpRequest 的另一个重要属性 responseXML。如果服务器选择使用 XML 响应则该属性包含（也许您已经猜到）XML 响应。处理 XML 响应和处理普通文本有很大不同，涉及到解析、文档对象模型（DOM）和其他一些问题。后面的文章中将进一步介绍 XML。但是因为 responseXML 通常和 responseText 一起讨论，这里有必要提一提。对于很多简单的 Ajax 应用程序 responseText 就够了，但是您很快就会看到通过 Ajax 应用程序也能很好地处理 XML。</p>
+<p>结束语</p>
+<p>您可能对 XMLHttpRequest 感到有点厌倦了，我很少看到一整篇文章讨论一个对象，特别是这种简单的对象。但是您将在使用 Ajax 编写的每个页面和应用程序中反复使用该对象。坦白地说，关于 XMLHttpRequest 还真有一些可说的内容。下一期文章中将介绍如何在请求中使用 POST 及 GET，来设置请求中的内容头部和从服务器响应读取内容头部，理解如何在请求/响应模型中编码请求和处理 XML。</p>
+<p>再往后我们将介绍常见 Ajax 工具箱。这些工具箱实际上隐藏了本文所述的很多细节，使得 Ajax 编程更容易。您也许会想，既然有这么多工具箱为何还要对底层的细节编码。答案是，如果不知道应用程序在做什么，就很难发现应用程序中的问题。</p>
+<p>因此不要忽略这些细节或者简单地浏览一下，如果便捷华丽的工具箱出现了错误，您就不必挠头或者发送邮件请求支持了。如果了解如何直接使用 XMLHttpRequest，就会发现很容易调试和解决最奇怪的问题。只有让其解决您的问题，工具箱才是好东西。</p>
+<p>因此请熟悉 XMLHttpRequest 吧。事实上，如果您有使用工具箱的 Ajax 代码，可以尝试使用 XMLHttpRequest 对象及其属性和方法重新改写。这是一种不错的练习，可以帮助您更好地理解其中的原理。</p>
+<p>下一期文章中将进一步讨论该对象，探讨它的一些更有趣的属性（如 responseXML），以及如何使用 POST 请求和以不同的格式发送数据。请开始编写代码吧。</p>                                    
+
+
+
+</div>
+</body>
+
+</html>

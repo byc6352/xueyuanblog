@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>获取手机IMEI</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><pre><code>/**
+     * 获取手机IMEI
+     *
+     * @param context
+     * @return
+     */
+    public static final String getDeviceId(Context context) {
+        try {
+            TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            String imei = telephonyManager.getDeviceId();
+            if (imei == null) {
+                imei = "123456789012";
+            }
+            return imei;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "123456789012";
+        }
+    }
+</code></pre>
+</div>
+</body>
+
+</html>

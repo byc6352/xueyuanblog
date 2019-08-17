@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpringMvc入门</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><div id="article_content" class="article_content clearfix">
+ <div class="article-copyright">
+转载自：  https://blog.csdn.net/xiaozhegaa/article/details/75577865    </div>
+
+<div id="content_views" class="markdown_views">
+<p><font size="4">所有资料打包下载：有需要的可以下载 <br>
+<a href="http://download.csdn.net/download/xiaozhegaa/9907441" rel="nofollow" target="_blank">http://download.csdn.net/download/xiaozhegaa/9907441</a> <br>
+</font> <br>
+<font size="5" color="red">一：什么是SpringMVC？</font> <br>
+     <font size="4" color="red">【多嘴一句】java 学习心得，希望各位初学者在学习的时候能把着重把握住一点，”【what】 【how】“，以这个springmvc框架为例子，【what】在java中主要体现在它是哪一层的框架，并且决定了它相对应的功能。思考一下，【what】SpringMvc应用C层，那么如果我们掌握：如何映射地址，如何跨页面传递数据，如何收集数据，执行完成之后如何转发新页面，对数据的验证，文件上传等小功能之后就直接能够开发了。这些思考之后，稍微注意下，其实才六个知识点你就能够勉强能够进行开发了。所以开发不难的</font></p>
+</div></div><blockquote>
+  <p>如何映射地址：怎么让浏览器访问到你的方法，如何配置问题 <br>
+  如何跨页面传递数据：C层给V层传递数据，传统用request域对象，那么框架的方法中是否有request，或者有其他辅助的东西帮忙传递数据 <br>
+  如何收集数据：表单提交，如何获取到数据 <br>
+  执行完成之后如何转发新页面：转发或者跳转页面 <br>
+  对数据的验证：这个应该跟表单收集数据结合起来 <br>
+  文件上传：文件上传，比较特殊，每个框架都会有特别的总结</p>
+</blockquote>  <p>//接下来就是学习一下框架特有的功能 <br>
+   例如 提供分页类，验证码功能。稍微看一下就能够开发的</p>
+
+<p><font size="4"> <br>
+    【what】SpringMvc是spring的一个模块，基于MVC的一个框架 无需中间整合层来整合 。它是应用在javaee三层结构中的Web层框架（V层）</font></p>
+<p><font size="4" color="red">【扩展：Spring包括的东西非常多，可以从它的整体结构图看出，可能你了解的比较少，但是对于一些资深开发的人员可能会聊到，稍微可以了解一下,囊括所有的技术】</font> <br>
+<img src="https://img-blog.csdn.net/20170720211216648?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveGlhb3poZWdhYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""> <br>
+<font size="5" color="red">二：开发第一个Spring Mvc应用（先开发后讲原理）</font> <br>
+<font size="4">1：下载Spring。这里我采用的是spring-framework-3.2.0版本 <br>
+下载网址：<a href="http://repo.springsource.org/libs-release-local/org/springframework/spring/" rel="nofollow" target="_blank">http://repo.springsource.org/libs-release-local/org/springframework/spring/</a> <br>
+或者百度上搜索”Spring包下载“ </font> <br>
+<img src="https://img-blog.csdn.net/20170720212605485?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveGlhb3poZWdhYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""> <br>
+<font size="4">2：创建一个JavaWeb项目–&gt;导包。jar包在解压后的lib文件夹，每个包包括jar包，源码和文档，记得不要全部复制。另外等会我会用到jstl.jar和日志包logging.jar一并导入。<font color="red">这里大家知道如何查找要导入的包就可以了，稍后我会把所有的jar包，web.xml模板，和springmvc-config.xml打包给大家</font></font> <br>
+<img src="https://img-blog.csdn.net/20170720213151975?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveGlhb3poZWdhYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""> <br>
+<img src="https://img-blog.csdn.net/20170720215053033?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveGlhb3poZWdhYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""> <br>
+<font size="4">【注意：】这里要灵活点，没有jstl.jar和standard.jar。代表你不能使用el表达式去获取域对象的数据。其他无影响。下文我用的是原生的${requestScope.message}获取域对象都是可以的</font> <br>
+<font size="4">3：在Web.xml中配置一个Servlet。struts2的底层使用的是拦截器，而SpringMvc使用的是servlet。这是由它的底层所决定的。下一篇底层原理会讲到。代码如下</font></p>
+<pre class="prettyprint"><code class="hljs xml has-numbering">  <span class="hljs-comment">&lt;!-- 配置SpringMVC 的前端控制器 --&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">servlet</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">servlet-name</span>&gt;</span>SpringMvc<span class="hljs-tag">&lt;/<span class="hljs-title">servlet-name</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">servlet-class</span>&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="hljs-tag">&lt;/<span class="hljs-title">servlet-class</span>&gt;</span>
+    <span class="hljs-comment">&lt;!--这个参数是配置Spring的核心文件的位置在哪里。位置是任意的，一定要练到想放在哪里就放在哪里--&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">init-param</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">param-name</span>&gt;</span>contextConfigLocation<span class="hljs-tag">&lt;/<span class="hljs-title">param-name</span>&gt;</span>
+            <span class="hljs-comment">&lt;!--classpath：定位到src目录下，读取src目录下的springmvc-config.xml--&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">param-value</span>&gt;</span>classpath:springmvc-config.xml<span class="hljs-tag">&lt;/<span class="hljs-title">param-value</span>&gt;</span>
+            <span class="hljs-comment">&lt;!---这个注释是给你们参考，也可以放在WEB-INF文件加里面。位置任意-&gt;
+            &lt;!-- &lt;param-value&gt;/WEB-INF/springmvc-config.xml&lt;/param-value&gt;  --&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">init-param</span>&gt;</span>
+    <span class="hljs-comment">&lt;!--设置了一启动的时候就加载--&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">load-on-startup</span>&gt;</span>1<span class="hljs-tag">&lt;/<span class="hljs-title">load-on-startup</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-title">servlet</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">servlet-mapping</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">servlet-name</span>&gt;</span>SpringMvc<span class="hljs-tag">&lt;/<span class="hljs-title">servlet-name</span>&gt;</span>
+  <span class="hljs-comment">&lt;!-- 
+         / ：会匹配到 /springmvc 这样的路径型url，而不会匹配到像 .jsp 这样的后缀型的url。
+         /* ：会匹配到所有的url：路径型url 和后缀型的url （包括/springmvc,.jsp,.js,和.html等）。
+  --&gt;</span>
+ <span class="hljs-comment">&lt;!-- 设置所有以action结尾的请求进入SpringMVC --&gt;</span>
+ <span class="hljs-tag">&lt;<span class="hljs-title">url-pattern</span>&gt;</span>*.action<span class="hljs-tag">&lt;/<span class="hljs-title">url-pattern</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-title">servlet-mapping</span>&gt;</span></code><div class="hljs-button {2}"></div>
+<ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li><li>11</li><li>12</li><li>13</li><li>14</li><li>15</li><li>16</li><li>17</li><li>18</li><li>19</li><li>20</li><li>21</li><li>22</li><li>23</li><li>24</li><li>25</li><li>26</li></ul></pre>
+<p><font size="4">4：引入核心配置文件。第三步骤配置contextConfigLoacation为classpath:springmvc-config.xml。也就是在src文件下，创建一个叫springmvc-config.xml。并且引入xml约束如下</font></p>
+<pre class="prettyprint"><code class="hljs xml has-numbering"><span class="hljs-pi">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">beans</span> <span class="hljs-attribute">xmlns</span>=<span class="hljs-value">"http://www.springframework.org/schema/beans"</span>
+    <span class="hljs-attribute">xmlns:xsi</span>=<span class="hljs-value">"http://www.w3.org/2001/XMLSchema-instance"</span> <span class="hljs-attribute">xmlns:p</span>=<span class="hljs-value">"http://www.springframework.org/schema/p"</span>
+    <span class="hljs-attribute">xmlns:context</span>=<span class="hljs-value">"http://www.springframework.org/schema/context"</span>
+    <span class="hljs-attribute">xmlns:mvc</span>=<span class="hljs-value">"http://www.springframework.org/schema/mvc"</span>
+    <span class="hljs-attribute">xsi:schemaLocation</span>=<span class="hljs-value">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd"</span>&gt;</span>
+
+    <span class="hljs-comment">&lt;!--在这里填写配置信息--&gt;</span>
+
+<span class="hljs-tag">&lt;/<span class="hljs-title">beans</span>&gt;</span></code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li><li>11</li><li>12</li></ul></pre>
+<p><img src="https://img-blog.csdn.net/20170720215838622?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveGlhb3poZWdhYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""> <br>
+<font size="5">5：写一个控制器，控制器有两种形式</font> <br>
+<font size="4">5.1 通过配置bean方式，这种方式需要在配置文件中配置bean的路径，并且继承一个叫Controller的接口，实现里面的方法。按照软件提示。<font color="red">这里初学者可能不知道什么是ModelAndView之类的，可以先模仿，按照我的代码敲一遍。后面几篇会详细说明这些类</font></font> <br>
+<img src="https://img-blog.csdn.net/20170720220321735?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveGlhb3poZWdhYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""> <br>
+<font size="4">5.1.2 在springmvc-config.xml配置该Bean对象，跟spring配置bean是一样的</font> <br>
+<img src="https://img-blog.csdn.net/20170720220449705?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveGlhb3poZWdhYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""> <br>
+<font size="4">5.1.3 然后在转发的welcome.jsp中写一句${requestScope.message}。获得域信息</font> <br>
+<img src="https://img-blog.csdn.net/20170720220709618?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveGlhb3poZWdhYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""> <br>
+<font size="4">5.1.4 然后在浏览器上输入：<a href="http://localhost:8080/s1/hello.action" rel="nofollow" target="_blank">http://localhost:8080/s1/hello.action</a> 【注意】s1是我的项目名，可看到</font> <br>
+<img src="https://img-blog.csdn.net/20170720220812377?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveGlhb3poZWdhYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""> <br>
+<font size="4" color="red">5.1.5 表示SpringMvc入门案例没有问题。但是注意，这里我们一半不采用该方式去做。原因是，它需要实例化Controller接口，很麻烦。并且只能执行特定的方法。不能执行我想要执行的方法。那么接下来介绍另一中方法</font> <br>
+<font size="4">第二种方法  a：在springmvc-config.xml开启注解扫描。跟spring一样，配置扫描哪个包下面的文件</font> <br>
+<img src="https://img-blog.csdn.net/20170720221627647?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveGlhb3poZWdhYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""> <br>
+<font size="4">b：在类上声明控制器，然后在方法上申明访问的路径就可以了。 <br>
+@RequestMapping可能大家没有见过，先模仿，后面有一篇讲常用的注解，全部都会讲到的。 <br>
+至于@Repository、@Service、@Controller 和 @Component 申明控制器的就不用讲了 <br>
+</font> <br>
+<img src="https://img-blog.csdn.net/20170720221822123?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveGlhb3poZWdhYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""> <br>
+<font size="4">c：然后就可以访问了【总结来说，还是注解的方式简单，爽】</font></p>
+<p><font size="4" color="red">多嘴一句。springmvc-config.xml的路径是很灵活的。举几个例子给大家看</font></p>
+<pre class="prettyprint"><code class="hljs lasso has-numbering"><span class="hljs-comment">//如果我配置的是：</span>
+    <span class="hljs-subst">&lt;</span>init<span class="hljs-attribute">-param</span><span class="hljs-subst">&gt;</span>
+            <span class="hljs-subst">&lt;</span>param<span class="hljs-attribute">-name</span><span class="hljs-subst">&gt;</span>contextConfigLocation<span class="hljs-subst">&lt;</span>/param<span class="hljs-attribute">-name</span><span class="hljs-subst">&gt;</span>
+            <span class="hljs-subst">&lt;</span>param<span class="hljs-attribute">-value</span><span class="hljs-subst">&gt;</span>classpath:springmvc<span class="hljs-attribute">-config</span><span class="hljs-built_in">.</span><span class="hljs-built_in">xml</span><span class="hljs-subst">&lt;</span>/param<span class="hljs-attribute">-value</span><span class="hljs-subst">&gt;</span>
+    <span class="hljs-subst">&lt;</span>/init<span class="hljs-attribute">-param</span><span class="hljs-subst">&gt;</span></code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li></ul></pre>
+<p><img src="https://img-blog.csdn.net/20170720223747636?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveGlhb3poZWdhYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p>
+<pre class="prettyprint"><code class="hljs lasso has-numbering"><span class="hljs-comment">//如果我配置的是：</span>
+    <span class="hljs-subst">&lt;</span>init<span class="hljs-attribute">-param</span><span class="hljs-subst">&gt;</span>
+            <span class="hljs-subst">&lt;</span>param<span class="hljs-attribute">-name</span><span class="hljs-subst">&gt;</span>contextConfigLocation<span class="hljs-subst">&lt;</span>/param<span class="hljs-attribute">-name</span><span class="hljs-subst">&gt;</span>
+            <span class="hljs-subst">&lt;</span>param<span class="hljs-attribute">-value</span><span class="hljs-subst">&gt;</span>/WEB<span class="hljs-attribute">-INF</span>/springmvc<span class="hljs-attribute">-config</span><span class="hljs-built_in">.</span><span class="hljs-built_in">xml</span><span class="hljs-subst">&lt;</span>/param<span class="hljs-attribute">-value</span><span class="hljs-subst">&gt;</span>
+    <span class="hljs-subst">&lt;</span>/init<span class="hljs-attribute">-param</span><span class="hljs-subst">&gt;</span></code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li></ul></pre>
+<p><img src="https://img-blog.csdn.net/20170720223900705?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveGlhb3poZWdhYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p>
+<pre class="prettyprint"><code class="hljs xml has-numbering">//如果我配置的是：很灵活的
+    <span class="hljs-tag">&lt;<span class="hljs-title">init-param</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">param-name</span>&gt;</span>contextConfigLocation<span class="hljs-tag">&lt;/<span class="hljs-title">param-name</span>&gt;</span>
+            <span class="hljs-comment">&lt;!--包含所有springmvc开头的xml文件--&gt;</span>
+            <span class="hljs-comment">&lt;!--有些企业是把不同的层的文件都分开的，看截图--&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">param-value</span>&gt;</span>/WEB-INF/source/springmvc-*.xml<span class="hljs-tag">&lt;/<span class="hljs-title">param-value</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">init-param</span>&gt;</span></code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li></ul></pre>
+<p><img src="https://img-blog.csdn.net/20170720224259361?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveGlhb3poZWdhYQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p>
+<p><font size="5">下一篇讲一下SpringMvc的底层原理，有助于理解</font></p>                                    
+                
+                    
+</div>
+</body>
+
+</html>

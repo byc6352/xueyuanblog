@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>delphi下载网站文件(支持https协议)</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1>一、URLDownloadToFile()函数介绍</h1>
+<p>使用微软提供的URLDownloadToFile function函数，函数原型：</p>
+<pre><code>HRESULT URLDownloadToFile(
+             LPUNKNOWN            pCaller,
+             LPCTSTR              szURL,
+             LPCTSTR              szFileName,
+  _Reserved_ DWORD                dwReserved,
+             LPBINDSTATUSCALLBACK lpfnCB
+);
+</code></pre>
+<p>该函数支持http,https协议的网站文件下载，使用简单。微软件官方参考文档：</p>
+<p><a href="https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/ms775123(v=vs.85)">https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/ms775123(v=vs.85)</a></p>
+<h1>二、delphi下对URLDownloadToFile()函数的封装</h1>
+<pre><code>//uses urlmon;
+function DownloadToFile(Source, Dest: string): Boolean;
+begin
+  try
+    Result := UrlDownloadToFile(nil, PChar(source), PChar(Dest), 0, nil) = 0;
+  except
+    Result := False;
+  end;
+end;
+</code></pre>
+<p>使用该函数需要注意几点：</p>
+<ul>
+<li>url链接必须带上<b>http://</b>或<b>https://</b>头部；</li>
+<li>本地路径为文件的绝对路径；</li>
+<li>需要引入单元文件：uses urlmon;</li>
+<li>该函数运行时会阻塞主线程，因此最好放到子线程内运行；</li>
+<li>使用该函数下载文件比IdHTTP控件简单易用，IdHTTP控件对https协议支持不好；</li>
+</ul>
+<h1>三、使用示例</h1>
+<p>1.主线程中使用：</p>
+<pre><code>DownloadToFile("https://www.w3school.com.cn/html/html_elements.asp","c:\html_elements.asp");
+</code></pre>
+<p>2.子线程中使用：</p>
+<pre><code>//uses urlmon;
+function DownloadToFile(Source, Dest: string): Boolean;
+begin
+  try
+    Result := UrlDownloadToFile(nil, PChar(source), PChar(Dest), 0, nil) = 0;
+  except
+    Result := False;
+  end;
+end;
+
+function ThreadProc(param: LPVOID): DWORD; stdcall;
+begin
+  DownloadToFile("https://www.w3school.com.cn/html/html_elements.asp","c:\html_elements.asp");
+  Result := 0;
+end;
+
+procedure downloadFilesThread();
+var
+  threadId: TThreadID;
+begin
+  bDownFiles:=true;
+  CreateThread(nil, 0, @ThreadProc, nil, 0, threadId);
+end;
+</code></pre>
+</div>
+</body>
+
+</html>

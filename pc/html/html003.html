@@ -1,0 +1,365 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title></title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><article class="baidu_pl">
+<div id="article_content" class="article_content clearfix">
+
+ <div id="content_views" class="markdown_views prism-atom-one-dark">
+<p><strong>原文地址：</strong></p>
+<blockquote>
+<p><a href="https://www.ibm.com/developerworks/cn/xml/wa-ajaxintro3/index.html" rel="nofollow">https://www.ibm.com/developerworks/cn/xml/wa-ajaxintro3/index.html</a></p>
+</blockquote>
+<p>在本系列的 上篇文章 中，我们将详细介绍 XMLHttpRequest 对象，它是 Ajax 应用程序的中心，负责处理服务器端应用程序和脚本的请求，并处理从服务器端组件返回的数据。由于所有的 Ajax 应用程序都要使用XMLHttpRequest 对象，因此您可能会希望熟悉这个对象，从而能够让 Ajax 执行得更好。</p>
+<blockquote>
+<p>但是对于希望掌握 Ajax 的开发人员来说，必须要全面理解:<br>
+<strong>HTTP 状态代码</strong><br>
+<strong>HTTP 就绪状态</strong><br>
+<strong>XMLHttpRequest 对象</strong>。</p>
+</blockquote>
+<p><strong>XMLHttpRequest 对象，它是 Ajax 应用程序的中心，负责处理服务器端应用程序和脚本的请求，并处理从服务器端组件返回的数据。所有的 Ajax 应用程序都要使用 XMLHttpRequest 对象。</strong></p>
+<p>重点介绍这个请求对象的 3 个关键部分的内容：</p>
+<blockquote>
+<p>?HTTP 就绪状态<br>
+?HTTP 状态代码<br>
+?可以生成的请求类型</p>
+</blockquote>
+<p>如果您不仅仅是想了解 Ajax 编程的常识，而是希望了解更多内容，就需要熟悉就绪状态、状态代码和请求本身的内容。当应用程序出现问题时 —— 这种问题总是存在 —— 那么<strong>如果能够正确理解就绪状态、如何生成一个 HEAD 请求或者 400 的状态代码的确切含义，就可以在 5 分钟内调试出问题，而不是在各种挫折和困惑中度过 5 个小时。</strong></p>
+<h2><a></a><a id="_HTTP__21"></a>深入了解 HTTP 就绪状态</h2>
+<p>XMLHttpRequest 对象的 <em><strong>readyState</strong></em> 的属性:这个属性确保服务器已经完成了一个请求，通常会使用一个回调函数从服务器中读出数据来更新 Web 表单或页面的内容。清单 1 给出了一个简单的例子:</p>
+<p><em>清单 1. 在回调函数中处理服务器的响应</em></p>
+<pre class="prettyprint"><code class="has-numbering">function updatePage() {
+   if (request.readyState == 4) {
+     if (request.status == 200) {
+       var response = request.responseText.split("|");
+       document.getElementById("order").value = response[0];
+       document.getElementById("address").innerHTML =
+         response[1].replace(/\n/g, "&lt;br /&gt;");
+     } else
+       alert("status is " + request.status);
+   }
+}
+</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li><li>11</li></ul></pre>
+<p>这显然是就绪状态最常见（也是最简单）的用法。正如您从数字 “4” 中可以看出的一样，还有其他几个就绪状态：</p>
+<blockquote>
+<p>0：请求未初始化（还没有调用 open()）。<br>
+1：请求已经建立，但是还没有发送（还没有调用 send()）。<br>
+2：请求已发送，正在处理中（通常现在可以从响应中获取内容头）。<br>
+3：请求在处理中；通常响应中已有部分数据可用了，但是服务器还没有完成响应的生成。<br>
+4：响应已完成；您可以获取并使用服务器的响应了。</p>
+</blockquote>
+<p><strong>隐秘就绪状态</strong></p>
+<p>第一种就绪状态的特点是 readyState 属性为 0（readyState == 0），表示未初始化状态。**一旦对请求对象调用 open() 之后，这个属性就被设置为 1。**由于您通常都是在一对请求进行初始化之后就立即调用 open()，因此很少会看到 readyState == 0 的状态。另外，未初始化的就绪状态在实际的应用程序中是没有真正的用处的。</p>
+<p>不过为了满足我们的兴趣，请参见 清单 2 的内容，其中显示了如何在 readyState 被设置为 0 时来获取这种就绪状态。</p>
+<p><em>清单 2. 获取 0 就绪状态</em></p>
+<pre class="prettyprint"><code class="has-numbering">  function getSalesData() {
+     // 创建一个请求对象
+     createRequest();  
+     alert("Ready state is: " + request.readyState);
+</code><pre><code> // 开始(初始化)这个请求
+ var url = "/boards/servlet/UpdateBoardSales";
+ request.open("GET", url, true);
+ request.onreadystatechange = updatePage;
+ request.send(null);
+</code></pre>
+</pre></div></div></article><p>}</p>
+<div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li><li>11</li></ul>
+<p>在这个简单的例子中，getSalesData() 是 Web 页面调用来启动请求（例如点击一个按钮时）所使用的函数。注意您必须在调用 open()之前 来查看就绪状态。图 1 给出了运行这个应用程序的结果。</p>
+<p>图 1. 就绪状态 0<br>
+<img src="https://img-blog.csdn.net/20180929172345672?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE0OTQ3ODQ1/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="就绪状态0"></p>
+<p>显然，这并不能为您带来多少好处；需要确保 尚未 调用 open() 函数的情况很少。在大部分 Ajax 编程的真实情况中，<strong>这种就绪状态的唯一用法就是使用相同的 XMLHttpRequest 对象在多个函数之间生成多个请求</strong>。在这种（不常见的）情况中，您可能会在生成新请求之前希望确保请求对象是处于未初始化状态（readyState == 0）。<strong>这实际上是要确保另外一个函数没有同时使用这个对象。</strong></p>
+<p><strong>查看正在处理的请求的就绪状态</strong></p>
+<p>除了 0 就绪状态之外，请求对象还需要依次经历典型的请求和响应的其他几种就绪状态，最后才以就绪状态 4 的形式结束。这就是为什么您在大部分回调函数中都可以看到 <strong>if (request.readyState == 4)</strong> 这行代码；<strong>它确保服务器已经完成对请求的处理，现在可以安全地更新 Web 页面或根据从服务器返回来的数据来进行操作了。</strong></p>
+<p>要查看这种状态发生的过程非常简单。如果就绪状态为 4，我们不仅要运行回调函数中的代码，而且还要在每次调用回调函数时都输出就绪状态。 清单 3 给出了一个实现这种功能的例子。</p>
+<p><em>清单 3. 查看就绪状态</em></p>
+<pre class="prettyprint"><code class="has-numbering">   function updatePage() {
+     // 输出当前状态
+     alert("updatePage() called with ready state of " + request.readyState);
+   }
+</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li></ul></pre>
+<p>当 0 等于 4 时</p>
+<p>在多个 JavaScript 函数都使用相同的请求对象时，您需要检查就绪状态 0 来确保这个请求对象没有正在使用，这种机制会产生问题。由于 readyState == 4 表示一个已完成的请求，因此您经常会发现那些目前没在使用的处于就绪状态的请求对象仍然被设置成了 4 —— 这是因为从服务器返回来的数据已经使用过了，但是从它们被设置为就绪状态之后就没有进行任何变化。有一个函数 abort() 会重新设置请求对象，但是这个函数却不是真正为了这个目的而使用的。如果您 必须 使用多个函数，最好是为每个函数都创建并使用一个函数，而不是在多个函数之间共享相同的对象。</p>
+<p>如果您不确定如何运行这个函数，就需要创建一个函数，然后在 Web 页面中调用这个函数，并让它向服务器端的组件发送一个请求（例如 清单 2 给出的函数，或本系列文章的第 1 部分和第 2 部分中给出的例子）。确保在建立请求时，将回调函数设置为 updatePage()；要实现这种设置，可以将请求对象的 onreadystatechange 属性设置为 updatePage()。</p>
+<p>这段代码就是 onreadystatechange 意义的一个确切展示 —— 每次请求的就绪状态发生变化时，就调用 updatePage()，然后我们就可以看到一个警告了。</p>
+<p>图 2. 就绪状态 1<br>
+<img src="https://img-blog.csdn.net/20180929172536840?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE0OTQ3ODQ1/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="就绪状态 1"></p>
+<p>您可以自己尝试运行这段代码。将其放入 Web 页面中，然后激活事件处理程序（单击按钮，在域之间按 tab 键切换焦点，或者使用设置的任何方法来触发请求）。这个回调函数会运行多次 —— 每次就绪状态都会改变 —— 您可以看到每个就绪状态的警告。这是跟踪请求所经历的各个阶段的最好方法。</p>
+<h2><a></a><a id="_107"></a>浏览器的不一致性</h2>
+<p>在对这个过程有一个基本的了解之后，请试着从几个不同的浏览器中访问您的页面。您应该会注意到各个浏览器如何处理这些就绪状态并不一致。例如，在 Firefox 1.5 中，您会看到以下就绪状态：</p>
+<p>?1<br>
+?2<br>
+?3<br>
+?4</p>
+<p>这并不奇怪，因为每个请求状态都在这里表示出来了。然而，如果您使用 Safari 来访问相同的应用程序，就应该看到 —— 或者看不到 —— 一些有趣的事情。下面是在 Safari 2.0.1 中看到的状态：</p>
+<p>?2<br>
+?3<br>
+?4</p>
+<p>Safari 实际上把第一个就绪状态给丢弃了，也并没有什么明显的原因说明为什么要这样做；不过这就是 Safari 的工作方式。这还说明了一个重要的问题：尽管在使用服务器上的数据之前确保请求的状态为 4 是一个好主意，但是依赖于每个过渡期就绪状态编写的代码的确会在不同的浏览器上得到不同的结果。</p>
+<p>例如，在使用 Opera 8.5 时，所显示的就绪状态情况就更加糟糕了：</p>
+<p>?3<br>
+?4</p>
+<p>最后，Internet Explorer 会显示如下状态：</p>
+<p>?1<br>
+?2<br>
+?3<br>
+?4</p>
+<p>如果您碰到请求方面的问题，这就是用来发现问题的 首要之处。最好的方式是在 Internet Explorer 和 Firefox 都进行一下测试 —— 您会看到所有这 4 种状态，并可以检查请求的每个状态所处的情况。</p>
+<p>接下来我们再来看一下响应端的情况。</p>
+<p><strong>显微镜下的响应数据</strong></p>
+<p>一旦我们理解在请求过程中发生的各个就绪状态之后，接下来就可以来看一下 XMLHttpRequest 对象的另外一个方面了 —— responseText 属性。回想一下在上一篇文章中我们介绍过的内容，就可以知道这个属性用来从服务器上获取数据。一旦服务器完成对请求的处理之后，就可以将响应请求数据所需要的任何数据放到请求的 responseText 中了。然后回调函数就可以使用这些数据，如 清单 1 和 清单 4 所示。</p>
+<p><em>清单 4. 使用服务器上返回的响应</em></p>
+<pre class="prettyprint"><code class="has-numbering"> function updatePage() {
+     if (request.readyState == 4) {
+       var newTotal = request.responseText;
+       var totalSoldEl = document.getElementById("total-sold");
+       var netProfitEl = document.getElementById("net-profit");
+       replaceText(totalSoldEl, newTotal);
+</code><pre><code>   /* 图 out the new net profit */
+   var boardCostEl = document.getElementById("board-cost");
+   var boardCost = getText(boardCostEl);
+   var manCostEl = document.getElementById("man-cost");
+   var manCost = getText(manCostEl);
+   var profitPerBoard = boardCost - manCost;
+   var netProfit = profitPerBoard * newTotal;
+
+   /* Update the net profit on the sales form */
+   netProfit = Math.round(netProfit * 100) / 100;
+   replaceText(netProfitEl, netProfit);
+ }
+</code></pre>
+</pre><p>}</p>
+<div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li><li>11</li><li>12</li><li>13</li><li>14</li><li>15</li><li>16</li><li>17</li><li>18</li><li>19</li><li>20</li></ul>
+<p>清单 1 相当简单；清单 4 稍微有点复杂，但是它们在开始时都要检查就绪状态，并获取 responseText 属性的值。</p>
+<p><strong>查看请求的响应文本</strong></p>
+<p>与就绪状态类似，responseText 属性的值在整个请求的生命周期中也会发生变化。要查看这种变化，请使用如 清单 5 所示的代码来测试请求的响应文本，以及它们的就绪状态。</p>
+<p><em>清单 5. 测试 responseText 属性</em></p>
+<pre class="prettyprint"><code class="has-numbering">   function updatePage() {
+     // Output the current ready state
+     alert("updatePage() called with ready state of " + request.readyState +
+           " and a response text of '" + request.responseText + "'");
+     }
+</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li></ul></pre>
+<p>现在在浏览器中打开 Web 应用程序，并激活您的请求。要更好地看到这段代码的效果，请使用 Firefox 或 Internet Explorer，因为这两个浏览器都可以报告出请求过程中所有可能的就绪状态。例如在就绪状态 2 中，就没有定义 responseText ；如果 JavaScript 控制台也已经打开了，您就会看到一个错误。</p>
+<p>图 3. 就绪状态为 2 的响应文本<br>
+<img src="https://img-blog.csdn.net/20180929172640626?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE0OTQ3ODQ1/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="就绪状态为 2 的响应文本"><br>
+不过在就绪状态 3 中，服务器已经在 responseText 属性中放上了一个值，至少在这个例子中是这样</p>
+<p>图 4. 就绪状态为 3 的响应文本<br>
+<img src="https://img-blog.csdn.net/20180929172709639?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE0OTQ3ODQ1/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="就绪状态为 3 的响应文本"><br>
+您会看到就绪状态为 3 的响应在每个脚本、每个服务器甚至每个浏览器上都是不一样的。不过，这在调试应用程序中依然是非常有用的。</p>
+<p><strong>获取安全数据</strong></p>
+<p>所有的文档和规范都强调，只有在就绪状态为 4 时数据才可以安全使用。相信我，当就绪状态为 3 时，您很少能找到无法从 responseText 属性获取数据的情况。然而，在应用程序中将自己的逻辑依赖于就绪状态 3 可不是什么好主意 —— 一旦您编写了依赖于就绪状态 3 的完整数据的的代码，几乎就要自己来负责当时的数据不完整问题了。</p>
+<p>比较好的做法是向用户提供一些反馈，说明在处于就绪状态 3 时，很快就会有响应了。尽管使用 alert() 之类的函数显然不是什么好主意 —— 使用 Ajax 然后使用一个警告对话框来阻塞用户显然是错误的 —— 不过您可以在就绪状态发生变化时更新表单或页面中的域。例如，对于就绪状态 1 来说要将进度指示器的宽度设置为 25%，对于就绪状态 2 来说要将进度指示器的宽度设置为 50%，对于就绪状态 3 来说要将进度指示器的宽度设置为 75%，当就绪状态为 4 时将进度指示器的宽度设置为 100%（完成）。</p>
+<p>当然，正如您已经看到的一样，这种方法非常聪明，但它是依赖于浏览器的。在 Opera 上，您永远都不会看到前两个就绪状态，而在 Safari 上则没有第一个（1）。由于这个原因，我将这段代码留作练习，而没有在本文中包括进来。</p>
+<p><strong>深入了解 HTTP 状态代码</strong></p>
+<p>有了就绪状态和您在 Ajax 编程技术中学习到的服务器的响应，您就可以为 Ajax 应用程序添加另外一级复杂性了 —— 这要使用 HTTP 状态代码。这些代码对于 Ajax 来说并没有什么新鲜。从 Web 出现以来，它们就已经存在了。在 Web 浏览器中您可能已经看到过几个状态代码：</p>
+<blockquote>
+<p>401：未经授权<br>
+403：禁止<br>
+404：没找到</p>
+</blockquote>
+<p>您可以找到更多的状态代码。</p>
+<blockquote>
+<p>xmlhttp.readyState的值及解释：<br>
+0：请求未初始化（还没有调用 open()）。<br>
+1：请求已经建立，但是还没有发送（还没有调用 send()）。<br>
+2：请求已发送，正在处理中（通常现在可以从响应中获取内容头）。<br>
+3：请求在处理中；通常响应中已有部分数据可用了，但是服务器还没有完成响应的生成。<br>
+4：响应已完成；您可以获取并使用服务器的响应了。</p>
+<p>xmlhttp.status的值及解释：<br>
+100——客户必须继续发出请求<br>
+101——客户要求服务器根据请求转换HTTP协议版本</p>
+<p>200——交易成功<br>
+201——提示知道新文件的URL<br>
+202——接受和处理、但处理未完成<br>
+203——返回信息不确定或不完整<br>
+204——请求收到，但返回信息为空<br>
+205——服务器完成了请求，用户代理必须复位当前已经浏览过的文件<br>
+206——服务器已经完成了部分用户的GET请求</p>
+<p>300——请求的资源可在多处得到<br>
+301——删除请求数据<br>
+302——在其他地址发现了请求数据<br>
+303——建议客户访问其他URL或访问方式<br>
+304——客户端已经执行了GET，但文件未变化<br>
+305——请求的资源必须从服务器指定的地址得到<br>
+306——前一版本HTTP中使用的代码，现行版本中不再使用<br>
+307——申明请求的资源临时性删除</p>
+<p>400——错误请求，如语法错误<br>
+401——请求授权失败<br>
+402——保留有效ChargeTo头响应<br>
+403——请求不允许<br>
+404——没有发现文件、查询或URl<br>
+405——用户在Request-Line字段定义的方法不允许<br>
+406——根据用户发送的Accept拖，请求资源不可访问<br>
+407——类似401，用户必须首先在代理服务器上得到授权<br>
+408——客户端没有在用户指定的饿时间内完成请求<br>
+409——对当前资源状态，请求不能完成<br>
+410——服务器上不再有此资源且无进一步的参考地址<br>
+411——服务器拒绝用户定义的Content-Length属性请求<br>
+412——一个或多个请求头字段在当前请求中错误<br>
+413——请求的资源大于服务器允许的大小<br>
+414——请求的资源URL长于服务器允许的长度<br>
+415——请求资源不支持请求项目格式<br>
+416——请求中包含Range请求头字段，在当前请求资源范围内没有range指示值，请求也不包含If-Range请求头字段<br>
+417——服务器不满足请求Expect头字段指定的期望值，如果是代理服务器，可能是下一级服务器不能满足请求合起来</p>
+<p>500——服务器产生内部错误<br>
+501——服务器不支持请求的函数<br>
+502——服务器暂时不可用，有时是为了防止发生系统过载<br>
+503——服务器过载或暂停维修<br>
+504——关口过载，服务器使用另一个关口或服务来响应用户，等待时间设定值较长<br>
+505——服务器不支持或拒绝支请求头中指定的HTTP版本</p>
+<p>1xx:信息响应类，表示接收到请求并且继续处理<br>
+2xx:处理成功响应类，表示动作被成功接收、理解和接受<br>
+3xx:重定向响应类，为了完成指定的动作，必须接受进一步处理<br>
+4xx:客户端错误，客户请求包含语法错误或者是不能正确执行<br>
+5xx:服务端错误，服务器不能正确执行一个正确的请求</p>
+<p>xmlhttp.readyState<mark>4 &amp;&amp; xmlhttp.status</mark>200的解释：请求完成并且成功返回</p>
+</blockquote>
+<p>要为 Ajax 应用程序另外添加一层控制和响应（以及更为健壮的错误处理）机制，您需要适当地查看请求和响应中的状态代码。</p>
+<p>200：一切正常</p>
+<p>在很多 Ajax 应用程序中，您将看到一个回调函数，它负责检查就绪状态，然后继续利用从服务器响应中返回的数据，如 清单 6 所示。</p>
+<p><em>清单 6. 忽略状态代码的回调函数</em></p>
+<pre class="prettyprint"><code class="has-numbering">   function updatePage() {
+     if (request.readyState == 4) {
+       var response = request.responseText.split("|");
+       document.getElementById("order").value = response[0];
+       document.getElementById("address").innerHTML =
+         response[1].replace(/\n/g, "&lt;br /&gt;");
+     }
+   }
+</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li></ul></pre>
+<p>这对于 Ajax 编程来说证明是一种短视而错误的方法。<strong>如果脚本需要认证，而请求却没有提供有效的证书，那么服务器就会返回诸如 403 或 401 之类的错误代码。然而，由于服务器对请求进行了应答，因此就绪状态就被设置为 4（即使应答并不是请求所期望的也是如此）。最终，用户没有获得有效数据，当 JavaScript 试图使用不存在的服务器数据时就可能会出现严重的错误</strong>。</p>
+<p>它花费了最小的努力来确保服务器不但完成了一个请求，而且还返回了一个 “一切良好” 的状态代码。这个代码是 “200”，它是通过 XMLHttpRequest 对象的 status 属性来报告的。为了确保服务器不但完成了一个请求，而且还报告了一个 OK 状态，请在您的回调函数中添加另外一个检查功能，如 清单 7 所示。</p>
+<p><em>清单 7. 检查有效状态代码</em></p>
+<pre class="prettyprint"><code class="has-numbering">  function updatePage() {
+     if (request.readyState == 4) {
+       if (request.status == 200) {
+         var response = request.responseText.split("|");
+         document.getElementById("order").value = response[0];
+         document.getElementById("address").innerHTML =
+           response[1].replace(/\n/g, "&lt;br /&gt;");
+       } else
+         alert("status is " + request.status);
+     }
+   }
+</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li><li>11</li></ul></pre>
+<p>通过添加这几行代码，您就可以确认是否存在问题，用户会看到一个有用的错误消息，而不仅仅是看到一个由断章取义的数据所构成的页面，而没有任何解释。</p>
+<p><strong>重定向和重新路由</strong></p>
+<p>在深入介绍有关错误的内容之前，我们有必要来讨论一下有关一个在使用 Ajax 时 并不需要 关心的问题 —— 重定向。在 HTTP 状态代码中，这是 300 系列的状态代码，包括：</p>
+<blockquote>
+<p>301：永久移动<br>
+302：找到（请求被重新定向到另外一个 URL/URI 上）<br>
+305：使用代理（请求必须使用一个代理来访问所请求的资源）</p>
+</blockquote>
+<p>Ajax 程序员可能并不太关心有关重定向的问题，这是由于两方面的原因：</p>
+<ol>
+<li>首先，Ajax 应用程序通常都是为一个特定的服务器端脚本、servlet或应用程序而编写的。对于那些您看不到就消失了的组件来说，Ajax程序员就不太清楚了。因此有时您会知道资源已经移动了（因为您移动了它，或者通过某种手段移动了它），接下来要修改请求中的URL，并且不会再碰到这种结果了。</li>
+<li>更为重要的一个原因是：Ajax 应用程序和请求都是封装在沙盒中的。这就意味着提供生成 Ajax 请求的 Web页面的域必须是对这些请求进行响应的域。因此 <a href="http://ebay.com" rel="nofollow">ebay.com</a> 所提供的 Web 页面就不能对一个在 amazon.com上运行的脚本生成一个 Ajax 风格的请求；在 <a href="http://ibm.com" rel="nofollow">ibm.com</a> 上的 Ajax 应用程序也无法对在 <a href="http://netbeans.org" rel="nofollow">netbeans.org</a> 上运行的servlets 发出请求。</li>
+</ol>
+<p>?结果是您的请求无法重定向到其他服务器上，而不会产生安全性错误。在这些情况中，您根本就不会得到状态代码。通常在调试控制台中都会产生一个 JavaScript 错误。因此，在对状态代码进行充分的考虑之后，您就可以完全忽略重定向代码的问题了。</p>
+<p>结果是您的请求无法重定向到其他服务器上，而不会产生安全性错误。在这些情况中，您根本就不会得到状态代码。通常在调试控制台中都会产生一个 JavaScript 错误。因此，在对状态代码进行充分的考虑之后，您就可以完全忽略重定向代码的问题了。</p>
+<p><strong>错误</strong></p>
+<p>一旦接收到状态代码 200 并且意识到可以很大程度上忽略 300 系列的状态代码之后，所需要担心的唯一一组代码就是 400 系列的代码了，这说明了不同类型的错误。回头再来看一下 清单 7，并注意在对错误进行处理时，只将少数常见的错误消息输出给用户了。尽管这是朝正确方向前进的一步，但是要告诉从事应用程序开发的用户和程序员究竟发生了什么问题，这些消息仍然是没有太大用处的。</p>
+<p>首先，我们要添加对找不到的页的支持。实际上这在大部分产品系统中都不应该出现，但是在测试脚本位置发生变化或程序员输入了错误的 URL 时，这种情况并不罕见。如果您可以自然地报告 404 错误，就可以为那些困扰不堪的用户和程序员提供更多帮助。例如，如果服务器上的一个脚本被删除了，我们就可以使用 清单 7 中的代码，这样用户就会看到一个非描述性错误。</p>
+<p>图 5. 常见错误处理<br>
+<img src="https://img-blog.csdn.net/20180929172813807?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE0OTQ3ODQ1/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="常见错误处理"></p>
+<p><strong>边界情况和困难情况</strong></p>
+<p>看到现在，一些新手程序员就可能会这究竟是要讨论什么内容。有一点事实大家需要知道：只有不到 5% 的 Ajax 请求需要使用诸如 2、3 之类的就绪状态和诸如 403 之类的状态代码（实际上，这个比率可能更接近于 1% 甚至更少）。这些情况非常重要，称为 边界情况（edge case） —— 它们只会在一些非常特殊的情况下发生，其中遇到的都是最奇特的问题。虽然这些情况并不普遍，但是这些边界情况却占据了大部分用户所碰到的问题的 80%!</p>
+<p>对于典型的用户来说，应用程序 100 次都是正常工作的这个事实通常都会被忘记，然而应用程序只要一次出错就会被他们清楚地记住。如果您可以很好地处理边界情况（或困难情况），就可以为再次访问站点的用户提供满意的回报。</p>
+<p>用户无法判断问题究竟是认证问题、没找到脚本（此处就是这种情况）、用户错误还是代码中有些地方产生了问题。添加一些简单的代码可以让这个错误更加具体。请参照 清单 8，它负责处理没找到的脚本或认证发生错误的情况，在出现这些错误时都会给出具体的消息。</p>
+<p><em>清单 8. 检查有效状态代码</em></p>
+<pre class="prettyprint"><code class="has-numbering">   function updatePage() {
+     if (request.readyState == 4) {
+       if (request.status == 200) {
+         var response = request.responseText.split("|");
+         document.getElementById("order").value = response[0];
+         document.getElementById("address").innerHTML =
+           response[1].replace(/\n/g, "&lt;br /&gt;");
+       } else if (request.status == 404) {
+         alert ("Requested URL is not found.");
+       } else if (request.status == 403) {
+         alert("Access denied.");
+       } else
+         alert("status is " + request.status);
+     }
+   }
+</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li><li>11</li><li>12</li><li>13</li><li>14</li><li>15</li></ul></pre>
+<p>虽然这依然相当简单，但是它的确多提供了一些有用的信息。图 6 给出了与 图 5 相同的错误，但是这一次错误处理代码向用户或程序员更好地说明了究竟发生了什么。</p>
+<p>图 6. 特殊错误处理<br>
+<img src="https://img-blog.csdn.net/20180929173001795?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE0OTQ3ODQ1/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="特殊错误处理"></p>
+<p>在我们自己的应用程序中，可以考虑在发生认证失败的情况时清除用户名和密码，并向屏幕上添加一条错误消息。我们可以使用类似的方法来更好地处理找不到脚本或其他 400 类型的错误（例如 405 表示不允许使用诸如发送 HEAD 请求之类不可接受的请求方法，而 407 则表示需要进行代理认证）。然而不管采用哪种选择，都需要从对服务器上返回的状态代码开始入手进行处理。</p>
+<p><strong>其他请求类型</strong></p>
+<p>如果您真希望控制 XMLHttpRequest 对象，可以考虑最后实现这种功能 —— 将 HEAD 请求添加到指令中。在前两篇文章中，我们已经介绍了如何生成 GET 请求；在马上就要发表的一篇文章中，您会学习有关使用 POST 请求将数据发送到服务器上的知识。不过本着增强错误处理和信息搜集的精神，您应该学习如何生成 HEAD 请求。</p>
+<p><strong>生成请求</strong></p>
+<p>实际上生成 HEAD 请求非常简单；您可以使用 “HEAD”（而不是 “GET” 或 “POST”）作为第一个参数来调用 open() 方法，如 清单 9 所示。</p>
+<p><em>清单 9. 使用 Ajax 生成一个 HEAD 请求</em></p>
+<pre class="prettyprint"><code class="has-numbering">  function getSalesData() {
+     createRequest();
+     var url = "/boards/servlet/UpdateBoardSales";
+     request.open("HEAD", url, true);
+     request.onreadystatechange = updatePage;
+     request.send(null);
+   }
+</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li></ul></pre>
+<p>当您这样生成一个 HEAD 请求时，服务器并不会像对 GET 或 POST 请求一样返回一个真正的响应***。相反，服务器只会返回资源的 头（header），这包括响应中内容最后修改的时间、请求资源是否存在和很多其他有用信息。***您可以在服务器处理并返回资源之前使用这些信息来了解有关资源的信息。</p>
+<p>对于这种请求您可以做的最简单的事情就是简单地输出所有的响应头的内容。这可以让您了解通过 HEAD 请求可以使用什么。清单 10 提供了一个简单的回调函数，用来输出从 HEAD 请求中获得的响应头的内容。</p>
+<p><em>清单 10. 输出从 HEAD 请求中获得的响应头的内容</em></p>
+<pre class="prettyprint"><code class="has-numbering">  function updatePage() {
+     if (request.readyState == 4) {
+       alert(request.getAllResponseHeaders());
+     }
+   }
+</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li></ul></pre>
+<p>您可以单独使用这些头（从服务器类型到内容类型）在 Ajax 应用程序中提供其他信息或功能。</p>
+<p>图 7. HEAD 请求的响应头<br>
+<img src="https://img-blog.csdn.net/20180929173056569?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE0OTQ3ODQ1/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="HEAD 请求的响应头"></p>
+<p><strong>检查 URL</strong></p>
+<p>您已经看到了当 URL 不存在时应该如何检查 404 错误。如果这变成一个常见的问题 —— 可能是缺少了一个特定的脚本或 servlet —— 那么您就可能会希望在生成完整的 GET 或 POST 请求之前来检查这个 URL。要实现这种功能，生成一个 HEAD 请求，然后在回调函数中检查 404 错误；清单 11 给出了一个简单的回调函数。</p>
+<p><strong>清单 11. 检查某个 URL 是否存在</strong></p>
+<pre class="prettyprint"><code class="has-numbering">   function updatePage() {
+     if (request.readyState == 4) {
+       if (request.status == 200) {
+         alert("URL exists");
+       } else if (request.status == 404) {
+         alert("URL does not exist.");
+       } else {
+         alert("Status is: " + request.status);
+       }
+     }
+   }
+</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li><li>11</li></ul></pre>
+<p>诚实地说，这段代码的价值并不太大。服务器必须对请求进行响应，并构造一个响应来填充内容长度的响应头，因此并不能节省任何处理时间。另外，这花费的时间与生成请求并使用 HEAD 请求来查看 URL 是否存在所需要的时间一样多，因为它要生成使用 GET 或 POST 的请求，而不仅仅是如 清单 7 所示一样来处理错误代码。不过，有时确切地了解目前什么可用也是非常有用的；您永远不会知道何时创造力就会迸发或者何时需要 HEAD 请求！</p>
+<p><strong>有用的 HEAD 请求</strong></p>
+<p>您会发现 HEAD 请求非常有用的一个领域是<strong>用来查看内容的长度或内容的类型</strong>。<em>这样可以确定是否需要发回大量数据来处理请求，和服务器是否试图返回二进制数据，而不是 HTML、文本或 XML</em>（在 JavaScript 中，这 3 种类型的数据都比二进制数据更容易处理）。</p>
+<p>在这些情况中，您只使用了适当的头名，并将其传递给 XMLHttpRequest 对象的 getResponseHeader() 方法。因此:</p>
+<blockquote>
+<p>要获取响应的长度，只需要调用<br>
+request.getResponseHeader(“Content-Length”);<br>
+要获取内容类型，请使用<br>
+request.getResponseHeader(“Content-Type”);</p>
+</blockquote>
+<p>在很多应用程序中，生成 HEAD 请求并没有增加任何功能，甚至可能会导致请求速度变慢（通过强制生成一个 HEAD 请求来获取有关响应的数据，然后在使用一个 GET 或 POST 请求来真正获取响应）。然而，在出现您不确定有关脚本或服务器端组件的情况时，使用 HEAD 请求可以获取一些基本的数据，而不需要对响应数据真正进行处理，也不需要大量的带宽来发送响应。</p>
+<p><strong>结束语</strong></p>
+<p>对于很多 Ajax 和 Web 程序员来说，本文中介绍的内容似乎是太高级了。生成 HEAD 请求的价值是什么呢？到底在什么情况下需要在 JavaScript 中显式地处理重定向状态代码呢？这些都是很好的问题；对于简单的应用程序来说，答案是这些高级技术的价值并不是非常大。</p>
+<p>然而，Web 已经不再是只需实现简单应用程序的地方了；用户已经变得更加高级，客户期望能够获得更好的稳定性、更高级的错误报告，如果应用程序有 1% 的时间停机，那么经理就可能会因此而被解雇。</p>
+<p>因此您的工作就不能仅仅局限于简单的应用程序了，而是需要更深入理解 XMLHttpRequest。</p>
+<ol>
+<li>?如果您可以考虑各种就绪状态 —— 并且理解了这些就绪状态在不同浏览器之间的区别 ——  就可以快速调试应用程序了。您甚至可以基于就绪状态而开发一些创造性的功能，并向用户和客户回报请求的状态。</li>
+<li>?如果您要对状态代码进行控制，就可以设置应用程序来处理脚本错误、非预期的响应以及边缘情况。结果是应用程序在所有的时间都可以正常工作，而不仅仅是只能一切都正常的情况下才能运行。</li>
+<li>?增加这种生成 HEAD 请求的能力，检查某个 URL 是否存在，以及确认某个文件是否被修改过，这样就可以确保用户可以获得有效的页面，用户所看到的信息都是最新的，（最重要的是）让他们惊讶这个应用程序是如何健壮和通用。</li>
+</ol>
+<p>本文的目的并非是要让您的应用程序显得十分华丽，而是帮助您去掉黄色聚光灯后重点昭显文字的美丽，或者外观更像桌面一样。尽管这些都是 Ajax 的功能（在后续几篇文章中就会介绍），不过它们却像是蛋糕表面的一层奶油。如果您可以使用 Ajax 来构建一个坚实的基础，让应用程序可以很好地处理错误和问题，用户就会返回您的站点和应用程序。在接下来的文章中，我们将添加这种直观的技巧，这会让客户兴奋得发抖 。</p>
+ 
+ 
+
+
+</div>
+</body>
+
+</html>

@@ -1,0 +1,198 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ajax 完整教程-(一)</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><article class="baidu_pl">
+<div id="article_content" class="article_content clearfix">
+
+<div id="content_views" class="markdown_views">
+<h2 id="ajax-简介"><a></a>Ajax 简介</h2>
+</div></div></article><p>Ajax 由 HTML、JavaScript? 技术、DHTML 和 DOM 组成，这一杰出的方法可以将笨拙的 Web 界面转化成交互性的 Ajax 应用程序。它是一种构建网站的强大方法。</p>
+<blockquote>
+  <p>Ajax 尝试建立桌面应用程序的功能和交互性，与不断更新的 Web <br>
+  应用程序之间的桥梁。可以使用像桌面应用程序中常见的动态用户界面和漂亮的控件，不过是在 Web 应用程序中。</p>
+</blockquote>
+<h2 id="ajax-应用程序所用到的基本技术"><a></a>Ajax 应用程序所用到的基本技术：</h2>
+<blockquote>
+  <ol>
+  <li>HTML 用于建立 Web 表单并确定应用程序其他部分使用的字段。  ?   JavaScript 代码是运行 Ajax</li>
+  <li>应用程序的核心代码，帮助改进与服务器应用程序的通信。  ?  DHTML 或 Dynamic HTML，用于动态更新表单。我们将使用</li>
+  <li>div、span 和其他动态 HTML 元素来标记 HTML。  ? 文档对象模型 DOM 用于（通过 JavaScript 代码）处理</li>
+  <li>HTML 结构和（某些情况下）服务器返回的 XML。</li>
+  </ol>
+</blockquote>
+<h2 id="ajax-的定义"><a></a>Ajax 的定义</h2>
+<blockquote>
+  <p>Ajax= Asynchronous JavaScript and XML（以及 DHTML 等）Asynchronous异步JS和XML。</p>
+</blockquote>
+<p>XMLHttpRequest这是一个 JavaScript 对象; 是处理所有服务器通信的对象,创建该对象很简单，如清单 1 所示。</p>
+<p><em>清单 1. 创建新的 XMLHttpRequest 对象</em></p>
+<pre class="prettyprint"><code class="hljs xml has-numbering"><span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">language</span>=<span class="hljs-value">"javascript"</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text/javascript"</span>&gt;</span><span class="javascript">
+    <span class="hljs-keyword">var</span> xmlHttp = <span class="hljs-keyword">new</span> XMLHttpRequest();
+</span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span></code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li></ul></pre>
+<blockquote>
+  <p>通过 XMLHttpRequest 对象与服务器进行对话的是 JavaScript 技术。这不是一般的应用程序流，这恰恰是 Ajax的强大功能的来源。 <br>
+  <img src="https://img-blog.csdn.net/20170122184355346?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMTQ5NDc4NDU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="Ajax数据传输流程" title=""></p>
+</blockquote>  <p>Ajax 基本上就是把 JavaScript 技术和 XMLHttpRequest 对象放在 Web 表单和服务器之间。 <br>
+  <img src="https://img-blog.csdn.net/20170122184445018?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMTQ5NDc4NDU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="Ajax执行流程" title=""></p>
+
+<p>得到 XMLHttpRequest 的句柄后，使用 JavaScript 代码完成以下任务：</p>
+<blockquote>
+  <ol>
+  <li>获取表单数据：JavaScript 代码很容易从 HTML 表单中抽取数据并发送到服务器。</li>
+  <li>修改表单上的数据：更新表单也很简单，从设置字段值到迅速替换图像。</li>
+  <li>解析 HTML 和 XML：使用 JavaScript 代码操纵 DOM（请参阅 下一节），处理 HTML 表单服务器返回的 XML数据的结构。</li>
+  </ol>
+</blockquote>
+<p>对于前两点，需要非常熟悉 getElementById() 方法，如 清单 2 所示。</p>
+<p><em>清单 2. 用 JavaScript 代码捕获和设置字段值</em></p>
+<pre class="prettyprint"><code class="hljs cs has-numbering"><span class="hljs-comment">//捕获字段值:</span>
+<span class="hljs-comment">// 获得字段"phone"的值并用其创建一个变量phone</span>
+<span class="hljs-keyword">var</span> phone = document.getElementById(<span class="hljs-string">"phone"</span>).<span class="hljs-keyword">value</span>;
+<span class="hljs-comment">//设置字段值:</span>
+<span class="hljs-comment">// 从response的数组中获得值并将其写到标签中</span>
+document.getElementById(<span class="hljs-string">"order"</span>).<span class="hljs-keyword">value</span> = response[<span class="hljs-number">0</span>];
+document.getElementById(<span class="hljs-string">"address"</span>).<span class="hljs-keyword">value</span> = response[<span class="hljs-number">1</span>];</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li></ul></pre>
+<h2 id="dom的功能"><a></a>DOM的功能</h2>
+<p><em>当需要在 JavaScript 代码和服务器之间传递 XML 和改变 HTML 表单的时候，我们再深入研究 DOM。</em></p>
+<h2 id="获取-request-对象"><a></a>获取 Request 对象</h2>
+<p>XMLHttpRequest 是 Ajax 应用程序的核心.</p>
+<pre class="prettyprint"><code class="hljs cs has-numbering"><span class="hljs-keyword">var</span> xmlhttp;
+<span class="hljs-keyword">if</span> (window.XMLHttpRequest)
+  {<span class="hljs-comment">// 从 IE7+, Firefox, Chrome, Opera, Safari 中获得XMLHttpRequest对象</span>
+  xmlhttp=<span class="hljs-keyword">new</span> XMLHttpRequest();
+  }
+<span class="hljs-keyword">else</span>
+  {<span class="hljs-comment">//从 IE6, IE5 中获得XMLHttpRequest对象</span>
+  xmlhttp=<span class="hljs-keyword">new</span> ActiveXObject(<span class="hljs-string">"Microsoft.XMLHTTP"</span>);
+  }</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li></ul></pre>
+<p><em>清单 4. 以支持多种浏览器的方式创建 XMLHttpRequest 对象</em></p>
+<pre class="prettyprint"><code class="hljs coffeescript has-numbering"><span class="hljs-regexp">/* Create a new XMLHttpRequest object to talk to the Web server */</span>
+<span class="hljs-reserved">var</span> xmlHttp = <span class="hljs-literal">false</span>;
+<span class="hljs-regexp">/*@cc_on @*/</span>
+/*<span class="hljs-property">@if</span> (<span class="hljs-property">@_jscript_version</span> &gt;= <span class="hljs-number">5</span>)
+<span class="hljs-keyword">try</span> {
+  xmlHttp = <span class="hljs-keyword">new</span> ActiveXObject(<span class="hljs-string">"Msxml2.XMLHTTP"</span>);
+} <span class="hljs-keyword">catch</span> (e) {
+  <span class="hljs-keyword">try</span> {
+    xmlHttp = <span class="hljs-keyword">new</span> ActiveXObject(<span class="hljs-string">"Microsoft.XMLHTTP"</span>);
+  } <span class="hljs-keyword">catch</span> (e2) {
+    xmlHttp = <span class="hljs-literal">false</span>;
+  }
+}
+<span class="hljs-property">@end</span> @*/
+
+<span class="hljs-keyword">if</span> (!xmlHttp &amp;amp;&amp; <span class="hljs-keyword">typeof</span> XMLHttpRequest != <span class="hljs-string">'undefined'</span>) {
+  xmlHttp = <span class="hljs-keyword">new</span> XMLHttpRequest();
+}</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li><li>11</li><li>12</li><li>13</li><li>14</li><li>15</li><li>16</li><li>17</li><li>18</li></ul></pre>
+<p>这段代码的核心分为三步：</p>
+<ol>
+<li>建立一个变量 xmlHttp 来引用即将创建的 XMLHttpRequest 对象。</li>
+<li>尝试在 Microsoft 浏览器中创建该对象： <br>
+      1）尝试使用 Msxml2.XMLHTTP 对象创建它。  <br>
+      2）如果失败，再尝试 Microsoft.XMLHTTP 对象。</li>
+<li>如果仍然没有建立 xmlHttp，则以非 Microsoft 的方式创建该对象。  最后，xmlHttp 应该引用一个有效的XMLHttpRequest 对象，无论运行什么样的浏览器。</li>
+</ol>
+<h2 id="ajax-的请求响应"><a></a>Ajax 的请求/响应</h2>
+<p>与服务器上的 Web 应用程序打交道的是 JavaScript 技术，而不是直接提交给那个应用程序的 HTML 表单。 <br>
+<strong>发出请求</strong> <br>
+如何使用XMLHttpRequest 对象? <br>
+首先–<em>需要一个能够调用JavaScript 方法</em> 的Web 页面 。 <br>
+接下来就是在所有 Ajax 应用程序中基本都雷同的流程：</p>
+<blockquote>
+  <p>1、从 Web 表单中获取需要的数据。 <br>
+  2、建立要连接的 URL。 <br>
+  3、打开到服务器的连接。 <br>
+  4、设置服务器在完成后要运行的函数。  <br>
+  5、发送请求。</p>
+</blockquote>
+<p>清单 5 中的示例 Ajax 方法就是按照这个顺序组织的：</p>
+<p><em>清单 5. 发出 Ajax 请求</em></p>
+<pre class="prettyprint"><code class="hljs javascript has-numbering"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">callServer</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-comment">// 获得city和state的值</span>
+  <span class="hljs-keyword">var</span> city = document.getElementById(<span class="hljs-string">"city"</span>).value;
+  <span class="hljs-keyword">var</span> state = document.getElementById(<span class="hljs-string">"state"</span>).value;
+  <span class="hljs-comment">// 当它们的值任一个不存在的时候结束JS</span>
+  <span class="hljs-keyword">if</span> ((city == <span class="hljs-literal">null</span>) || (city == <span class="hljs-string">""</span>)) <span class="hljs-keyword">return</span>;
+  <span class="hljs-keyword">if</span> ((state == <span class="hljs-literal">null</span>) || (state == <span class="hljs-string">""</span>)) <span class="hljs-keyword">return</span>;
+
+  <span class="hljs-comment">// 创建连接的URL对象</span>
+  <span class="hljs-keyword">var</span> url = <span class="hljs-string">"/scripts/getZipCode.php?city="</span> + <span class="hljs-built_in">escape</span>(city) + <span class="hljs-string">"&amp;state="</span> + <span class="hljs-built_in">escape</span>(state);
+
+  <span class="hljs-comment">// 打开一个连接服务器的连接</span>
+  xmlHttp.open(<span class="hljs-string">"GET"</span>, url, <span class="hljs-literal">true</span>);
+
+  <span class="hljs-comment">// 设置一个方法,当请求返回的时候调用这个方法</span>
+  xmlHttp.onreadystatechange = updatePage;
+  <span class="hljs-comment">//xmlhttp.onreadystatechange=function()</span>
+  <span class="hljs-comment">//{</span>
+  <span class="hljs-comment">//    if (xmlhttp.readyState==4 &amp;&amp; xmlhttp.status==200)</span>
+  <span class="hljs-comment">//    {</span>
+  <span class="hljs-comment">//   document.getElementById("myDiv").innerHTML=xmlhttp.responseText;</span>
+  <span class="hljs-comment">//    }</span>
+  <span class="hljs-comment">//}</span>
+
+  <span class="hljs-comment">// 发生链接</span>
+  xmlHttp.send(<span class="hljs-literal">null</span>);
+}</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li><li>9</li><li>10</li><li>11</li><li>12</li><li>13</li><li>14</li><li>15</li><li>16</li><li>17</li><li>18</li><li>19</li><li>20</li><li>21</li><li>22</li><li>23</li><li>24</li><li>25</li><li>26</li><li>27</li></ul></pre>
+<blockquote>
+  <p>开始的代码使用基本 JavaScript 代码获取几个表单字段的值。  然后设置一个 PHP 脚本作为链接的目标。   要注意脚本 URL <br>
+  的指定方式，city 和 state（来自表单）使用简单的 GET 参数附加在 URL 之后。   最后一个参数如果设为 <br>
+  true，那么将请求一个异步连接（这就是 Ajax 的由来）。   如果使用 false，那么代码发出请求后将等待服务器返回的响应。 <br>
+    如果设为 true，当服务器在后台处理请求的时候用户仍然可以使用表单（甚至调用其他 JavaScript 方法）。 <br>
+    onreadystatechange <br>
+  属性可以告诉服务器在运行完成后做什么。因为代码没有等待服务器，必须让服务器知道怎么做以便您能作出响应。 <br>
+    在这个示例中，如果服务器处理完了请求，一个特殊的名为 updatePage() 的方法将被触发。 <br>
+      最后，使用值 null 调用send()。因为已经在请求 URL 中添加了要发送给服务器的数据（city 和state），所以请求中不需要发送任何数据。这样就发出了请求，服务器按照您的要求工作。</p>
+</blockquote>
+<p><strong>处理响应</strong></p>
+<blockquote>
+  <p>1.什么也不要做，直到 xmlHttp.readyState 属性的值等于 4。 <br>
+  2.服务器将把响应填充到 xmlHttp.responseText 属性中。</p>
+</blockquote>  <p>其中的第一点，即就绪状态;  <br>
+  第二点，使用 xmlHttp.responseText 属性获得服务器的响应,清单 6中的示例方法可供服务器根据 清单 5 中发送的数据调用。</p>
+
+<p><em>清单 6. 处理服务器响应</em></p>
+<pre class="prettyprint"><code class="hljs javascript has-numbering"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updatePage</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-keyword">if</span> (xmlHttp.readyState == <span class="hljs-number">4</span>) {
+    <span class="hljs-keyword">var</span> response = xmlHttp.responseText;
+    document.getElementById(<span class="hljs-string">"zipCode"</span>).value = response;
+  }
+}</code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li></ul></pre>
+<p>它等待服务器调用，如果是就绪状态，则使用服务器返回的值（这里是用户输入的城市和州的 ZIP 编码）设置另一个表单字段的值。 <br>
+一旦服务器返回 ZIP 编码，updatePage() 方法就用城市/州的 ZIP 编码设置那个字段的值，用户就可以改写该值。这样做有两个原因：</p>
+<p><em>保持例子简单，说明有时候可能希望用户能够修改服务器返回的数据。</em></p>
+<p>要记住这两点，它们对于好的用户界面设计来说很重要。</p>
+<p><strong>连接 Web 表单</strong></p>
+<p>一个 JavaScript 方法捕捉用户输入表单的信息并将其发送到服务器，另一个 JavaScript 方法监听和处理响应，并在响应返回时设置字段的值。所有这些实际上都依赖于调用 第一个 JavaScript 方法，它启动了整个过程。 <br>
+利用 JavaScript 技术更新表单。</p>
+<p>清单 7. 启动一个 Ajax 过程</p>
+<pre class="prettyprint"><code class="hljs xml has-numbering"><span class="hljs-tag">&lt;<span class="hljs-title">form</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>City: <span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text"</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">"city"</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"city"</span> <span class="hljs-attribute">size</span>=<span class="hljs-value">"25"</span> 
+           <span class="hljs-attribute">onChange</span>=<span class="hljs-value">"callServer();"</span> /&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>State: <span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text"</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">"state"</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"state"</span> <span class="hljs-attribute">size</span>=<span class="hljs-value">"25"</span> 
+           <span class="hljs-attribute">onChange</span>=<span class="hljs-value">"callServer();"</span> /&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">p</span>&gt;</span>Zip Code: <span class="hljs-tag">&lt;<span class="hljs-title">input</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text"</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">"zipCode"</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"city"</span> <span class="hljs-attribute">size</span>=<span class="hljs-value">"5"</span> /&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">p</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">form</span>&gt;</span></code><div class="hljs-button {2}"></div><ul class="pre-numbering"><li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li></ul></pre>
+<p>当用户在 city 或 state 字段中输入新的值时，callServer() 方法就被触发，于是 Ajax 开始运行了。</p>
+<h2 id="结束语"><a></a>结束语</h2>
+<p>在下一期文章中，您将掌握:</p>
+<blockquote>
+  <p>XMLHttpRequest 对象  <br>
+  学会如何处理 JavaScript 和服务器的通信  <br>
+  如何使用 HTML 表单以及如何获得 DOM 句柄。</p>
+</blockquote>                                    
+                
+                    
+    
+</div>
+</body>
+
+</html>

@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title></title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><div class="note">
+  <div class="post">
+    <div class="article">
+        <h1 class="title">如何生成唯一的Android设备ID？</h1>
+        <div class="show-content">
+          <div class="show-content-free">
+            <p>前几天接到个任务，旧的那套获取设备标识的方法经常返回相同的ID，所以需要我重新寻找一套可靠的区分设备的方法。经过几天的研究，大致有了一些想法。</p>
+<p>先从需求出发分析出我的主要目标——为每一台设备生成唯一、软件无关的标识ID。<br>
+其中关键词是“唯一”和“软件无关”，“唯一”要求不同设备有不同的ID，“软件无关”是考虑到软件重装后或者不同软件都能根据相同的方法获取到相同的ID。<br>
+　　根据多年被坑的经验，对于一个运行在设备系统上的App，获取的每一个硬件的标识都不完全可靠，可能因为用户修改了硬件信息，或者厂商定制系统有漏洞，所以我们在寻找一套符合主要目标的的方案的同时，还要尽可能减少这些不可靠因素的影响。<br>
+　　翻阅各种资料，最后得出比较有价值的硬件标识有以下几个：</p>
+<ul>
+<li><p><strong>Device ID</strong>：<br>
+开发者可以使用系统提供的TelephonyManager服务来获取Device ID，GSM设备返回的是IMEI码，CDMA设备返回的是MEID码或者ESN码。<br>
+使用Device ID的优点在于重复率低，如果返回了Device ID，可以保证每个ID都是唯一的，但缺点也很明显，首先平板电脑等非手机设备无法提供Device ID，其次6.0以后需要用户动态授予READ_PHONE_STATE权限，如果用户拒绝就无法获得Device ID了。<br>
+public static String getDeviceId(Context context) {<br>
+TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);<br>
+String deviceId = telephonyManager.getDeviceId().toString();<br>
+return deviceId;<br>
+}</p></li>
+<li><p><strong>Android ID</strong>：<br>
+在设备首次启动时，系统会随机生成一个64位的数字，并把这个数字以16进制字符串的形式保存下来，这个16进制的字符串就是ANDROID_ID，当设备被wipe后该值会被重置。<br>
+Android ID是一个不错的选择，64位的随机数重复率不高，而且不需要申请权限，但也有些小问题，比如有个很常见的Bug会导致设备产生相同的Android ID: 9774d56d682e549c，另外Android ID的生成不依赖硬件，刷机或者升级系统（这个没验证过）都会改变Android ID。<br>
+public static String getAndroidId(Context context) {<br>
+return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);<br>
+}</p></li>
+<li>
+<p><strong>Mac地址</strong>：<br>
+WLAN Mac地址和Bluetooth Mac地址都是与硬件相关的唯一号码，分别需要ACCESS_WIFI_STATE和BLUETOOTH权限，其中WLAN Mac地址经常被作为参数来生成设备标识，但是在Android 6.0（iOS 7）以后，官方以保护用户隐私为由关闭了获取Mac地址的接口，调用获取的方法会统一返回 02:00:00:00:00:00，虽然还是有间接获取Mac地址的方法，但既然官方不再支持使用，有更好选择的情况下就暂时不考虑使用Mac地址了。此外获取这两个Mac地址需要设备拥有Wifi和蓝牙硬件。</p>
+<p>6.0获取方法参考：<br>
+<a href="https://www.jianshu.com/p/a62ff95d8e17" target="_blank">Android M 如何获取 Wifi MAC地址</a><br>
+[<a href="https://link.jianshu.com?t=https://stackoverflow.com/questions/33377982/get-bluetooth-local-mac-address-in-marshmallow" target="_blank" rel="nofollow">Get Bluetooth local mac address in Marshmallow</a></p>
+</li>
+<li><p><strong>Build信息</strong>：<br>
+android.os.Build类包含了很多设备信息，包括系统版本号、手机型号等硬件软件信息，具体内容参考<a href="https://link.jianshu.com?t=http://blog.csdn.net/zy987654zy/article/details/8637435" target="_blank" rel="nofollow">Android获取手机制作商，系统版本等</a><br>
+Build信息无需任何权限可以直接调用获取，同时使用多个信息的话一般不会都为空，缺点是重复率很高，同型号手机的Build信息很可能完全相同，而且系统升级等不属于更换设备的操作可能会修改到其中的内容，所以只考虑作为生成设备ID 的辅助参数。<br>
+public static String getBuildInfo() {<br>
+//这里选用了几个不会随系统更新而改变的值<br>
+StringBuffer buildSB = new StringBuffer();<br>
+buildSB.append(Build.BRAND).append("/");<br>
+buildSB.append(Build.PRODUCT).append("/");<br>
+buildSB.append(Build.DEVICE).append("/");<br>
+buildSB.append(Build.ID).append("/");<br>
+buildSB.append(Build.VERSION.INCREMENTAL);<br>
+return buildSB.toString();<br>
+//        return Build.FINGERPRINT;<br>
+}</p></li>
+</ul>
+<p>综上所述，Device ID和Mac地址都需要额外的权限，而且并非适用于所有Android设备，所以不考虑使用。最终方案选用Android ID和Build信息做种子来生成设备ID，如果只需要做用户统计等不关心到具体设备的功能，可以只使用Android ID做种子，在获取到的Android ID等于9774d56d682e549c时，就随机生成一个ID代替；如果要实现推送消息等需要精确区分设备的功能，可以用Android ID和Build的部分设备信息做种子。</p>
+<p>还需要注意的是，以上全部标识都可能被用户或者系统修改的，应用每次获取的Android ID或者Device ID等种子可能并不相同，生成的设备ID也会不一样，为了解决这问题，可以把生成的设备ID保存起来，每次使用时先检查有没有已经保存的设备ID，如果没有才生成一个并保存，保存的位置可以是应用的私有空间或者公共空间，具体选择视乎是否需要多个应用使用同一个设备ID。</p>
+<p>最终实现代码如下：</p>
+</div></div></div></div></div><pre><code>  /**
+     * 获取Android Id
+     *
+     * @param context
+     * @return
+     */
+    public static String getAndroidId(Context context) {
+        return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
+
+    /**
+     * 获取Build的部分信息
+     *
+     * @return
+     */
+    public static String getBuildInfo() {
+        //这里选用了几个不会随系统更新而改变的值
+        StringBuffer buildSB = new StringBuffer();
+        buildSB.append(Build.BRAND).append("/");
+        buildSB.append(Build.PRODUCT).append("/");
+        buildSB.append(Build.DEVICE).append("/");
+        buildSB.append(Build.ID).append("/");
+        buildSB.append(Build.VERSION.INCREMENTAL);
+        return buildSB.toString();
+//        return Build.FINGERPRINT;
+    }
+
+    /**
+     * 最终方案，获取设备ID
+     *
+     * @param context
+     * @return
+     */
+    public static String getDeviceUUID(Context context) {
+        String uuid = loadDeviceUUID(context);
+        if (TextUtils.isEmpty(uuid)) {
+            uuid = buildDeviceUUID(context);
+            saveDeviceUUID(context, uuid);
+        }
+        return uuid;
+    }
+
+    private static String buildDeviceUUID(Context context) {
+        String androidId = getAndroidId(context);
+        if (!"9774d56d682e549c".equals(androidId)) {
+            Random random = new Random();
+            androidId = Integer.toHexString(random.nextInt())
+                    + Integer.toHexString(random.nextInt())
+                    + Integer.toHexString(random.nextInt());
+        }
+        return new UUID(androidId.hashCode(), getBuildInfo().hashCode()).toString();
+    }
+
+    private static void saveDeviceUUID(Context context, String uuid) {
+        context.getSharedPreferences("device_uuid", Context.MODE_PRIVATE)
+                .edit()
+                .putString("uuid", uuid)
+                .apply();
+    }
+
+    @Nullable
+    private static String loadDeviceUUID(Context context) {
+        return context.getSharedPreferences("device_uuid", Context.MODE_PRIVATE)
+                .getString("uuid", null);
+    }
+</code></pre>
+<p>源码地址：<br>
+<a href="https://link.jianshu.com?t=https://github.com/fwh007/Lib-DeviceId" target="_blank" rel="nofollow">Lib-DeviceId</a></p>
+<p>参考：</p>
+<ol>
+<li><a href="https://link.jianshu.com?t=https://developer.android.com/training/articles/user-data-ids.html?hl=zh-cn#tenets_of_working_with_android_identifiers" target="_blank" rel="nofollow">唯一标识符最佳做法</a></li>
+<li><a href="https://link.jianshu.com?t=https://stackoverflow.com/questions/2785485/is-there-a-unique-android-device-id" target="_blank" rel="nofollow">Is there a unique Android device ID?</a></li>
+<li><a href="https://link.jianshu.com?t=https://android-developers.googleblog.com/2011/03/identifying-app-installations.html" target="_blank" rel="nofollow">Identifying App Installations</a></li>
+<li><a href="https://www.jianshu.com/p/178786f833b6" target="_blank">如何唯一的标识一台Android设备？</a></li>
+<li><a href="https://www.jianshu.com/p/b6f4b0aca6b0" target="_blank">谈谈 Android 中的各种设备标识符</a></li>
+</ol>
+ 
+ 
+ 
+</div>
+</body>
+
+</html>

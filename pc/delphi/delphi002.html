@@ -1,0 +1,452 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IHTMLDocument2</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><pre><code>{IHTMLDocument2 方法:}
+write                 //写入
+writeln               //写入并换行
+open                  //打开一个流，以收集 document.write 或 document.writeln 的输出
+close                 //关闭并输出用 document.open 方法打开的流
+clear                 //清空文档中所有元素, 可能暂时不支持
+queryCommandSupported //是否支持指定命令
+queryCommandEnabled   //指定命令是否有效
+queryCommandState     //是否设置了指定命令
+queryCommandIndeterm  //指定命令是否处于不确定状态
+queryCommandText      //命令
+queryCommandValue     //命令值
+execCommand           //执行命令
+execCommandShowHelp   //命令帮助信息
+createElement         //建立元素
+elementFromPoint      //指定坐标下的元素
+createStyleSheet      //创建一个样式表
+
+{IHTMLDocument2 属性:}
+all                   //所有 HTML 元素的集合
+images                //所有 image 对象的集合
+applets               //所有 applet 对象的集合
+links                 //所有 link 对象的集合
+forms                 //所有 form 对象的集合
+anchors               //所有 anchor 对象的集合
+scripts               //所有 script 对象的集合
+frames                //所有 frame 对象的集合, 这应该和 window.frames 是一样的
+embeds                //所有 embed 对象的集合
+plugins               //所有 plugin 对象的集合
+styleSheets           //样式表集合
+title                 //网页标题
+body                  //body 对象
+activeElement         //当前具有输入焦点的元素
+designMode            //设计模式, 可选值: Inherit On Off
+selection             //当前选择
+readyState            //页面读取状态: uninitialized、loading、loaded、interactive、completed
+linkColor             //链接的颜色
+alinkColor            //活动链接的颜色
+vlinkColor            //已访问过的链接的颜色
+bgColor               //背景颜色
+fgColor               //文本颜色
+referrer              //返回载入当前页面的页面的 URL
+location              //同 window.location
+lastModified          //返回文档最后修改的日期和时间
+url                   //返回当前文档的 URL
+domain                //返回域名
+cookie                //返回文档相关的 cookie
+expando               //可设置与获取的布尔值, 是否允许扩展
+charset               //获取文档的字符集名称
+defaultCharset        //获取浏览器默认的字符集名称
+mimeType              //文档类型
+fileSize              //文档大小, 单位字节, 用字符串表示
+fileCreatedDate       //文档建立时间 ???
+fileModifiedDate      //文档修改时间 ???
+fileUpdatedDate       //文档更新时间 ???
+security              //文档安全
+protocol              //传输协议
+nameProp              //文件标题, 好像同 Title
+parentWindow          //父窗口
+Script                //
+
+{IHTMLDocument2 事件:}
+onhelp                //用 F1 获取帮助时
+onclick               //单击时
+ondblclick            //双击时
+onmousedown           //鼠标点下时
+onmouseup             //鼠标抬起时
+onmousemove           //鼠标移动时
+onmouseover           //鼠标进入时
+onmouseout            //鼠标离开时
+onkeypress            //按键时
+onkeyup               //键按住时
+onkeydown             //键抬起时
+onreadystatechange    //状态改变时
+onrowexit             //当前数据源的数据将要发生变化时
+onrowenter            //当前数据源的数据发生变化并且有新的数据时
+ondragstart           //开始拖动时
+onselectstart         //开始选择时
+onbeforeupdate        //更新前
+onafterupdate         //更新后
+onerrorupdate         //更新错误时
+
+
+{IHTMLDocument3 方法:}
+recalc                //重新获取文档中的全部动态属性
+releaseCapture        //释放文档中对象的鼠标捕捉
+
+{IHTMLDocument3 属性:}
+createTextNode        //建立文本
+attachEvent           //绑定事件
+detachEvent           //取消事件绑定
+createDocumentFragment//创建新文档
+getElementsByName     //返回带有指定 name 的对象集合
+getElementById        //返回指定 id 的第一个对象的引用
+getElementsByTagName  //返回指定标签的对象集合
+documentElement       //获取文档根部节点, 也就是 HTML 节点
+uniqueID              //获取对象的唯一标识符
+dir                   //
+parentDocument        //
+enableDownload
+baseUrl               //基础地址
+
+{IHTMLDocument3 事件:}
+onrowsdelete          //当前数据记录被删除时
+onrowsinserted        //当前数据源将要插入新数据时
+oncellchange          //当数据来源发生变化时
+ondatasetchanged      //数据源发生变化时
+ondataavailable       //当数据接收完成时
+ondatasetcomplete     //当数据源的全部有效数据读取完毕时
+onpropertychange      //改变属性时
+oncontextmenu         //当按下鼠标右键出现菜单或通过键盘触发页面菜单时
+onstop                //停止或离开时
+
+
+{IHTMLDocument4 方法:}
+focus                 //获得输入焦点
+hasFocus              //是否拥有输入焦点
+createDocumentFromUrl //下载指定网页并返回其 IHTMLDocument2 接口
+CreateEventObject     //生成当使用 fireEvent 方法时用于传递事件相关信息的 event 对象 ???
+FireEvent
+
+{IHTMLDocument4 属性:}
+createRenderStyle     //建立 IHTMLRenderStyle 接口
+namespaces            //
+media                 //
+URLUnencoded          //获取去除字符编码的 URL
+
+{IHTMLDocument4 事件:}
+onselectionchange     //改变选择时
+oncontrolselect       //好像是框选时
+
+
+{IHTMLDocument5 方法:}
+createAttribute       //建立指定 name 的属性
+createComment         //建立注释
+
+{IHTMLDocument5 属性:}
+doctype               //文档类型
+implementation_       //获取 IHTMLDOMImplementation 接口
+compatMode            //兼容模式, 返回 BackCompat、CSS1Compat 等
+
+{IHTMLDocument5 事件:}
+onmousewheel          //旋转鼠标滚动轮时
+onfocusin             //获取输入焦点时
+onfocusout            //失去输入焦点时
+onactivate            //激活时
+ondeactivate          //当前对象变为父文档的其他对象时
+onbeforeactivate      //onactivate 前
+onbeforedeactivate    //ondeactivate 前 
+
+Ihtmldocument2接口的使用 
+MSHTML是微软公司的一个COM组件，该组件封装了HTML语言中的所有元素及其属性，通过其提供的标准接口，可以访问指定网页的所有元素．
+　　MSHTML对象模型是由一些对象和集合组成的．处于根部的是HTML，描述了打开页面的1个窗口，包括一系列集合和对象。如Frames集合，History，Location，Navigator，Document，Vi—sum，Event对象等．其中描述呈现在客户窗口实际网页的是Document对象。由一系列的属性、方法、对象和集合组成．其中All集合中包含网页中所有标记(Tag)元素，其主要的方法和属性有：
+　　(1)Length(长度)：即标记出现的个数，可以把标记的集合理解为从0开始的一维数组，其次序按照标记在网页位置排列；
+　　(2)Tags(标记)：用于过滤出给定标记的集合，如Doc．Al1．Tags(P)得到所有分段标记P；
+　　(3)Item(项目)：用于选择集合中的某1个元素，如object．item(0)得到集合的第1个元素，而object．item(i)得到第i+1个元素．
+　　此外，IHTMLElement也是个常用的集合对象，代表网页中指定标记的集合，通过这个集合对象，可以得到网页上特定标记的内容．IHTMLElement有4个主要属性：
+　　(1)InnerText：开始标记和结束标记之间的文本；
+　　(2)InnerHTML：开始标记和结束标记之间的文本和HTML；
+　　(3)OuterText：对象的文本；
+　　(4)OuterHTML：对象的文本和HTML．
+注意：使用前加入单元mshtml
+演示表单提交
+procedure TForm1.Button1Click(Sender: TObject);
+var
+Doc:IHTMLDocument2;
+input:OleVariant;
+userinputelement,pwdinputelement:ihtmlinputelement;
+begin
+doc:=webbrowser1.document as ihtmldocument2;
+userinputelement:=(doc.all.item('user'(也就是网页中用户名控件的名字),0) as ihtmlinputelement);
+userinputelement.value:=edit1.text;(也就是你要向网页输入的东西)
+pwdinputelement:=(doc.all.item('password',0) as ihtmlinputelement);
+pwdinputelement.value:=edit2.text;
+input:=doc.all.item('submit',0);
+input.click;
+end;
+当提交数据按钮没有NAME属性时，采用如下方法：
+procedure TForm1.Button1Click(Sender: TObject);
+var
+Doc:IHTMLDocument2;
+form:ithmlformelement;
+userinputelement,pwdinputelement:ihtmlinputelement;
+begin
+doc:=webbrowser1.document as ihtmldocument2;
+userinputelement:=(doc.all.item('user'(也就是网页中用户名控件的名字),0) as ihtmlinputelement);
+userinputelement.value:=edit1.text;(也就是你要向网页输入的东西)
+pwdinputelement:=(doc.all.item('password',0) as ihtmlinputelement);
+pwdinputelement:=edit2.text;
+form:=(doc.all.item('login_form',0) as ihtmlformelement):
+form.submit;
+end;
+登录"按钮一般都是网页中默认的回车按钮,所以可以用上面代码来代替前面的点击按钮
+读取某网页内容
+在创建窗体的时候打开一网页
+
+webbrowser1.navigate('http://www.baidu.com')
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+memo1.lines.add(ihtmldocument2(webbrowser1.document).body.outerhtml);
+end;
+
+这样一来memo1中显示www.baidu.com的html
+利用webbrowser1控件浏览某txt中文件的内容，并以html形式来显示出来
+在webbrowser1的控件中的ondocumentcomplete事件加入如下代码
+procedure TForm1.WebBrowser1DocumentComplete(Sender: TObject;
+const pDisp: IDispatch; var URL: OleVariant);
+var
+webdoc:htmldocument ;
+webbody:htmlbody;
+begin
+webdoc:=webbrowser1.document as htmldocument;
+webbody:=webdoc.body as htmlbody;
+webbody.insertAdjacentHTML('beforeend','&lt;form method="POST" action=""&gt;');
+webbody.insertAdjacentHTML('beforeend','Password: ');
+webbody.insertAdjacentHTML('beforeend','&lt;input type="password" &gt;');
+webbody.insertAdjacentHTML('beforeend','&lt;input type="submit" value="LOGIN" &gt;');
+webbody.insertAdjacentHTML('beforeend',' ');
+webbody.insertAdjacentHTML('beforeend','&lt;/form&gt;');
+end;
+
+
+读取的时候，webbrowser控件得要完整的打开某一网页，
+document.execCommand()方法处理Html数据时常用语法格式 如下:
+复制内容到剪贴板 
+代码 :
+document.execCommand(sCommand[,交互方式, 动态参数 ]) 
+其中：sCommand为指令参数（如下例中的"2D-Position"），交互方式参数如果是true的话将显示对话框，如果为false的话，则不显示对话框（下例中的"false"即表示不显示对话框），动态参数一般为一可用值或属性 值（如下例中的"true"）。 
+
+document.execCommand("2D-Position","false","true"); 
+
+
+调用execCommand()可以实现浏览器菜单 的很多功能. 如保存文件 ,打开新文件,撤消、重做操作...等等. 有了这个方法,就可以很容易的实现网页中的文本编辑器. 
+
+如果灵活运用,可以很好的辅助我们完成各种项目. 
+
+使用的例子如下: 
+
+
+1、〖全选〗命令的实现 
+[格式]:document.execCommand("selectAll")
+[说明]将选种网页中的全部内容！
+[举例]在&lt;body&gt;&lt;/body&gt;之间加入：
+&lt;a href="#" onclick=document.execCommand("selectAll")&gt;全选&lt;/a&gt; 
+
+2、〖打开〗命令的实现
+[格式]:document.execCommand("open")
+[说明]这跟VB等编程设计中的web browser控件中的命令有些相似，大家也可依此琢磨琢磨。
+[举例]在&lt;body&gt;&lt;/body&gt;之间加入：
+&lt;a href="#" onclick=document.execCommand("open")&gt;打开&lt;/a&gt;
+
+3、〖另存为〗命令的实现 
+[格式]:document.execCommand("saveAs")
+[说明]将该网页保存到本地盘的其它目录！
+[举例]在&lt;body&gt;&lt;/body&gt;之间加入：
+&lt;a href="#" onclick=document.execCommand("saveAs")&gt;另存为&lt;/a&gt;
+
+4、〖打印〗命令的实现 
+[格式]:document.execCommand("print")
+[说明]当然，你必须装了打印机！
+[举例]在&lt;body&gt;&lt;/body&gt;之间加入：
+&lt;a href="#" onclick=document.execCommand("print")&gt;打印&lt;/a&gt;
+
+Js代码  下面列出的是指令参数及意义
+
+//相当于单击文件中的打开按钮 
+document.execCommand("Open"); 
+  
+//将当前页面 另存为 
+document.execCommand("SaveAs"); 
+  
+//剪贴选中的文字到剪贴板; 
+document.execCommand("Cut","false",null); 
+  
+//删除选中的文字; 
+document.execCommand("Delete","false",null); 
+  
+//改变选中区域的字体; 
+document.execCommand("FontName","false",sFontName); 
+  
+//改变选中区域的字体大小; 
+document.execCommand("FontSize","false",sSize|iSize); 
+  
+//设置前景颜色; 
+document.execCommand("ForeColor","false",sColor); 
+  
+//使绝对定位的对象可直接拖动; 
+document.execCommand("2D-Position","false","true"); 
+  
+//使对象定位变成绝对定位; 
+document.execCommand("AbsolutePosition","false","true"); 
+  
+//设置背景颜色; 
+document.execCommand("BackColor","false",sColor); 
+  
+//使选中区域的文字加粗; 
+document.execCommand("Bold","false",null); 
+  
+//复制选中的文字到剪贴板; 
+document.execCommand("Copy","false",null); 
+  
+//设置指定锚点为书签; 
+document.execCommand("CreateBookmark","false",sAnchorName); 
+  
+//将选中文 本变成超连接,若第二个参数为true,会出现参数设置对话框; 
+document.execCommand("CreateLink","false",sLinkURL); 
+  
+//设置当前块的标签名; 
+document.execCommand("FormatBlock","false",sTagName);  
+
+//相当于单击文件中的打开按钮
+document.execCommand("Open");
+
+//将当前页面另存为
+document.execCommand("SaveAs");
+
+//剪贴选中的文字到剪贴板;
+document.execCommand("Cut","false",null);
+
+//删除选中的文字;
+document.execCommand("Delete","false",null); 
+
+//改变选中区域的字体;
+document.execCommand("FontName","false",sFontName); 
+
+//改变选中区域的字体大小;
+document.execCommand("FontSize","false",sSize|iSize); 
+
+//设置前景颜色;
+document.execCommand("ForeColor","false",sColor);
+
+//使绝对定位的对象可直接拖动; 
+document.execCommand("2D-Position","false","true");
+
+//使对象定位变成绝对定位; 
+document.execCommand("AbsolutePosition","false","true");
+
+//设置背景颜色;
+document.execCommand("BackColor","false",sColor);
+
+//使选中区域的文字加粗;
+document.execCommand("Bold","false",null);
+
+//复制选中的文字到剪贴板;
+document.execCommand("Copy","false",null);
+
+//设置指定锚点为书签;
+document.execCommand("CreateBookmark","false",sAnchorName);
+
+//将选中文本变成超连接,若第二个参数为true,会出现参数设置对话框;
+document.execCommand("CreateLink","false",sLinkURL);
+
+//设置当前块的标签名;
+document.execCommand("FormatBlock","false",sTagName);
+document对象execCommand通常在IE中在线处理Html数据时非常有用，它可以让你轻而易举实现文字的加粗、加颜色、加字体等一系列的命令。
+    D-Position 允许通过拖曳移动绝对定位的对象。 
+    AbsolutePosition 设定元素的 position 属性为“absolute”(绝对)。 
+    BackColor 设置或获取当前选中区的背景颜色。 
+    BlockDirLTR 目前尚未支持。 
+    BlockDirRTL 目前尚未支持。 
+    Bold 切换当前选中区的粗体显示与否。 
+    BrowseMode 目前尚未支持。 
+    Copy 将当前选中区复制到剪贴板。 
+    CreateBookmark 创建一个书签锚或获取当前选中区或插入点的书签锚的名称。 
+    CreateLink 在当前选中区上插入超级链接，或显示一个对话框允许用户指定要为当前选中区插入的超级链接的 URL。 
+    Cut 将当前选中区复制到剪贴板并删除之。 
+    Delete 删除当前选中区。 
+    DirLTR 目前尚未支持。 
+    DirRTL 目前尚未支持。 
+    EditMode 目前尚未支持。 
+    FontName 设置或获取当前选中区的字体。 
+    FontSize 设置或获取当前选中区的字体大小。 
+    ForeColor 设置或获取当前选中区的前景(文本)颜色。 
+    FormatBlock 设置当前块格式化标签。 
+    Indent 增加选中文本的缩进。 
+    InlineDirLTR 目前尚未支持。 
+    InlineDirRTL 目前尚未支持。 
+    InsertButton 用按钮控件覆盖当前选中区。 
+    InsertFieldset 用方框覆盖当前选中区。 
+    InsertHorizontalRule 用水平线覆盖当前选中区。 
+    InsertIFrame 用内嵌框架覆盖当前选中区。 
+    InsertImage 用图像覆盖当前选中区。 
+    InsertInputButton 用按钮控件覆盖当前选中区。 
+    InsertInputCheckbox 用复选框控件覆盖当前选中区。 
+    InsertInputFileUpload 用文件上载控件覆盖当前选中区。 
+    InsertInputHidden 插入隐藏控件覆盖当前选中区。 
+    InsertInputImage 用图像控件覆盖当前选中区。 
+    InsertInputPassword 用密码控件覆盖当前选中区。 
+    InsertInputRadio 用单选钮控件覆盖当前选中区。 
+    InsertInputReset 用重置控件覆盖当前选中区。 
+    InsertInputSubmit 用提交控件覆盖当前选中区。 
+    InsertInputText 用文本控件覆盖当前选中区。 
+    InsertMarquee 用空字幕覆盖当前选中区。 
+   InsertOrderedList 切换当前选中区是编号列表还是常规格式化块。 
+    InsertParagraph 用换行覆盖当前选中区。 
+    InsertSelectDropdown 用下拉框控件覆盖当前选中区。 
+    InsertSelectListbox 用列表框控件覆盖当前选中区。 
+    InsertTextArea 用多行文本输入控件覆盖当前选中区。 
+    InsertUnorderedList 切换当前选中区是项目符号列表还是常规格式化块。 
+    Italic 切换当前选中区斜体显示与否。 
+    JustifyCenter 将当前选中区在所在格式化块置中。 
+    JustifyFull 目前尚未支持。 
+    JustifyLeft 将当前选中区所在格式化块左对齐。 
+    JustifyNone 目前尚未支持。 
+    JustifyRight 将当前选中区所在格式化块右对齐。 
+    LiveResize 迫使 MSHTML 编辑器在缩放或移动过程中持续更新元素外观，而不是只在移动或缩放完成后更新。 
+    MultipleSelection 允许当用户按住 Shift 或 Ctrl 键时一次选中多于一个站点可选元素。 
+    Open 目前尚未支持。 
+    Outdent 减少选中区所在格式化块的缩进。 
+    OverWrite 切换文本状态的插入和覆盖。 
+    Paste 用剪贴板内容覆盖当前选中区。 
+    PlayImage 目前尚未支持。 
+    Print 打开打印对话框以便用户可以打印当前页。 
+    Redo 目前尚未支持。 
+    Refresh 刷新当前文档。 
+    RemoveFormat 从当前选中区中删除格式化标签。 
+    RemoveParaFormat 目前尚未支持。 
+    SaveAs 将当前 Web 页面保存为文件。 
+    SelectAll 选中整个文档。 
+    SizeToControl 目前尚未支持。 
+    SizeToControlHeight 目前尚未支持。 
+    SizeToControlWidth 目前尚未支持。 
+    Stop 目前尚未支持。 
+    StopImage 目前尚未支持。 
+    StrikeThrough 目前尚未支持。 
+    Subscript 目前尚未支持。 
+    Superscript 目前尚未支持。 
+    UnBookmark 从当前选中区中删除全部书签。 
+    Underline 切换当前选中区的下划线显示与否。 
+    Undo 目前尚未支持。 
+    Unlink 从当前选中区中删除全部超级链接。 
+    Unselect 清除当前选中区的选中状态。
+ 
+ 
+关于document.execCommand：   
+          要执行编辑命令，可调用   document.execCommand，并传递对应于命令   ID   的字符串。另外还有可选的第二个参数 ，该参数指定如果可以应用的话是否显示此命令的用户界面。传递整数   1   将显示用户界面，整数   0   将跳过它。这个参数通常不用于编辑命令。因为默认值为   0，所以假如您没有使用第三个参数（在这种情况下，还必须为第二个参数传递值），一般可以不管它。第三个参数也是可选的， 在可应用的情况下，使用它来将任何所需参数传递给该命令。
+</code></pre>
+</div>
+</body>
+
+</html>

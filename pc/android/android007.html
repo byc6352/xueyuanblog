@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>android 简单socket收发字符串示例</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><p>这是一个简单的socket收发操作程序。原理如下：</p>
+<ol>
+<li>java规定，socket操作必须放在子线程里面；</li>
+<li>主线程通过for循环，判断全局变量mResponse是否为空，等待子线程接收数据完成；</li>
+<li>如果mResponse不为空，则退出循环，进一步解析服务器返回的数据；</li>
+<li>sleep(1000)为使主线程休眠1秒;</li>
+</ol>
+<pre><code>private String mResponse="";//接收到的字符串；
+//.............................
+ private boolean remoteAuthorize(){
+        final String requestString="01aa0001";//发送字符串；
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Socket socket = new Socket(HOST, PORT);//创建与服务器的连接；
+                    OutputStream out = socket.getOutputStream();
+                    out.write(requestString.getBytes());//将字符串转换为字节数组发送；
+                    InputStream in=socket.getInputStream();
+                    byte[] buf=new byte[6];//接收缓冲；
+                    in.read(buf);
+                    mResponse=new String(buf);//将字节数组转换为字符串；
+                    socket.close();//关闭连接；
+                } catch (Exception e) {
+                    //Log.e("byc001", ("connectService:fail." );
+                }
+            }
+    }).start();
+        for (int i=0;i&lt;10;i++){//等待线程接收数据完成。10秒。
+            sleep(1000);
+            if (mResponse.equals(""))continue;else break;//接收到数据就退出循环；
+        }
+        if (mResponse.equals(""))return false;
+        String res=mResponse.substring(0,2);
+        if (res.equals("01"))return true;
+        return false;
+    }
+
+ /**
+     * 休眠函数
+     * @param i 休眠时间，单位为毫秒；
+     */
+    private void sleep(int i){
+        try {
+            Thread.sleep(i);
+        } catch (Exception e) {
+            //Log.e("byc001", ("." );
+        }
+    }
+</code></pre>
+</div>
+</body>
+
+</html>

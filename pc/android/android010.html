@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fiddler证书安装（查看HTTPS）</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><div class="article">
+        <h1 class="title">Fiddler证书安装（查看HTTPS） </h1>
+      <!-- &#25991;&#31456;&#20869;&#23481; -->
+ <div class="show-content">
+<div class="show-content-free">
+            <p>现在很多带有比较重要信息的接口都使用了安全性更高的HTTPS，而Fiddler默认是抓取HTTP类型的接口，要想查看HTTPS类型接口就需要安装fiddler证书。<br></p><p>fiddler安装教程可参考：<a href="https://link.jianshu.com?t=http://blog.csdn.net/SomeOne_yt/article/details/53120294" target="_blank" rel="nofollow">http://blog.csdn.net/SomeOne_yt/article/details/53120294</a></p><p>手机连接fiddler可参考：http://blog.csdn.net/SomeOne_yt/article/details/53149308</p><p><b>1、首先确保安装的 Fiddler 是较新的版本，比较老的版本可能会出现安装不上fiddler证书生成器的问题。</b></p><p><b>2、关闭Fiddler。</b></p><p><b>3、下载并安装Fiddler证书生成器</b>。（注：Fiddler 证书生成器只能在 Vista 以上系统运行）</p><p>下载地址：<a href="https://link.jianshu.com?t=http://www.telerik.com/docs/default-source/fiddler/addons/fiddlercertmaker.exe?sfvrsn=2" target="_blank" rel="nofollow">http://www.telerik.com/docs/default-source/fiddler/addons/fiddlercertmaker.exe?sfvrsn=2</a></p><p><b>4、打开Fiddler，点击工具栏中的Tools——&gt;Fiddler Options…</b></p>
+</div></div></div><p><img src="https://img-blog.csdnimg.cn/20190727172659324.?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2J5YzYzNTI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>5、切换到 HTTPS 选项卡，勾选 Capture HTTPS CONNECTs，勾选 Decrypt HTTPS trafic，会弹出安装证书的提示。一路点是或确定安装即可。</p>
+<p><img src="https://img-blog.csdnimg.cn/20190727172755281.?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2J5YzYzNTI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>6、重启fiddler，依然停留在 HTTPS 选项卡，点击右侧Actions，能看一个下拉菜单，点击 Export Root Certificate to Desktop，此时证书会生成到桌面上，名为 FiddlerRoot.cer，点OK保存</p>
+<p><img src="https://img-blog.csdnimg.cn/20190727172835125.?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2J5YzYzNTI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>7、导入证书进行安装</p><p>这部分android和ios有一点不同。</p><p><b>方法一：</b></p><p>1）android可以连接到电脑上，从电脑上打开手机的内存卡，直接把证书导入SD卡中。</p><p>2）点击设置——&gt;安全——&gt;从SD卡安装——&gt;从内部存储空间中找到证书，点击安装即可</p>
+<p><img src="https://img-blog.csdnimg.cn/20190727172906404." alt="在这里插入图片描述"></p>
+<p><img src="https://img-blog.csdnimg.cn/20190727172932383." alt="在这里插入图片描述"></p>
+<p><img src="https://img-blog.csdnimg.cn/2019072717301344." alt="在这里插入图片描述"></p>
+<p><img src="https://img-blog.csdnimg.cn/20190727173045372." alt="在这里插入图片描述"></p>
+<p><b>方法二：</b></p><p>ios可以在手机浏览器上登录邮箱，然后将证书发送到邮箱中，在手机上查看邮件，点击附件进行证书的安装即可</p><p>8、查看HTTPS</p><p>打开fiddler，Tools——&gt;Fiddler Options…，切换到HTTPS选项卡，把选项都勾选上，点击保存，就可以查看HTTPS接口了</p>
+<p><img src="https://img-blog.csdnimg.cn/20190727173126416.?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2J5YzYzNTI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+
+
+
+</div>
+</body>
+
+</html>
